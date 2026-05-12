@@ -16,3 +16,9 @@ describe('payloadToQrString — tel', () => {
     );
   });
 });
+
+describe('payloadToQrString — text', () => {
+  it('returns text value as-is', () => {
+    expect(payloadToQrString({ kind: 'text', value: 'Hallo Welt' })).toBe('Hallo Welt');
+  });
+});
