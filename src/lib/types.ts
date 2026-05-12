@@ -18,13 +18,11 @@ export type QrPayload =
 
 export type QrKind = QrPayload['kind'];
 
-export interface Preset {
+export type Preset = QrPayload & {
   id: string;
   label: string;
   icon?: string;
-  kind: QrKind;
-  value: Extract<QrPayload, { kind: QrKind }>['value'];
-}
+};
 
 export interface HistoryEntry {
   id: string;
