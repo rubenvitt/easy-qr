@@ -8,3 +8,11 @@ describe('payloadToQrString — url', () => {
     );
   });
 });
+
+describe('payloadToQrString — tel', () => {
+  it('prefixes tel: scheme', () => {
+    expect(payloadToQrString({ kind: 'tel', value: '+4915112345678' })).toBe(
+      'tel:+4915112345678'
+    );
+  });
+});
