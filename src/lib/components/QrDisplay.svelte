@@ -17,9 +17,17 @@
       return;
     }
     error = null;
+    let cancelled = false;
     payloadToSvg(text)
-      .then((s) => (svg = s))
-      .catch((e: Error) => (error = e.message));
+      .then((s) => {
+        if (!cancelled) svg = s;
+      })
+      .catch((e: Error) => {
+        if (!cancelled) error = e.message;
+      });
+    return () => {
+      cancelled = true;
+    };
   });
 </script>
 
