@@ -13,6 +13,7 @@
 ## File Structure
 
 **Source (`src/`):**
+
 - `app.html` — HTML-Shell mit Viewport, Theme-Color, kein DRK-Branding
 - `routes/+layout.svelte` — PWA-Shell, Update-Prompt, Offline-Indikator
 - `routes/+page.svelte` — Hauptansicht (Presets, URL-Input, Verlauf, Sub-Routen-Buttons)
@@ -35,10 +36,12 @@
 - `data/presets.json` — Build-Zeit-importiert
 
 **Static (`static/`):**
+
 - `manifest.webmanifest`
 - `icons/192.png`, `icons/512.png`, `icons/maskable.png`
 
 **Tests (`tests/`):**
+
 - `unit/payload.test.ts`
 - `unit/qr.test.ts`
 - `unit/history.test.ts`
@@ -56,6 +59,7 @@
 - `e2e/helpers/decode-qr.ts` — Round-Trip mit `jsqr`
 
 **Konfiguration / Doku:**
+
 - `package.json`, `pnpm-lock.yaml`, `svelte.config.js`, `vite.config.ts`, `tsconfig.json`
 - `.eslintrc.cjs`, `.prettierrc`, `playwright.config.ts`, `vitest.config.ts`
 - `scripts/validate-presets.ts` — Build-Hook
@@ -69,6 +73,7 @@
 ### Task 1: SvelteKit-Projekt initialisieren
 
 **Files:**
+
 - Create: `package.json`, `pnpm-workspace.yaml` (optional), `svelte.config.js`, `vite.config.ts`, `tsconfig.json`, `.gitignore`, `src/app.html`, `src/routes/+page.svelte`, `src/routes/+layout.svelte`
 
 - [ ] **Step 1: Verzeichnis vorbereiten und SvelteKit-Skeleton anlegen**
@@ -97,17 +102,21 @@ In `package.json` das Feld `packageManager` ergänzen (Version aus `pnpm --versi
 - [ ] **Step 3: Dependencies installieren**
 
 Run:
+
 ```bash
 pnpm install
 ```
+
 Expected: `pnpm-lock.yaml` wird erzeugt, kein Fehler.
 
 - [ ] **Step 4: Dev-Server-Smoke-Test**
 
 Run:
+
 ```bash
 pnpm dev --port 5173
 ```
+
 Expected: Vite startet, „Local: http://localhost:5173" sichtbar. Mit `Ctrl-C` beenden.
 
 - [ ] **Step 5: Commit**
@@ -122,6 +131,7 @@ git commit -m "chore: bootstrap SvelteKit project with pnpm"
 ### Task 2: Static-Adapter konfigurieren
 
 **Files:**
+
 - Modify: `svelte.config.js`
 - Modify: `package.json`
 
@@ -166,9 +176,11 @@ export const ssr = false;
 - [ ] **Step 4: Build-Smoke-Test**
 
 Run:
+
 ```bash
 pnpm build
 ```
+
 Expected: `build/`-Verzeichnis mit `index.html` und Assets. Keine Fehler.
 
 - [ ] **Step 5: Commit**
@@ -183,6 +195,7 @@ git commit -m "build: configure static adapter for client-only PWA"
 ### Task 3: Lint, Format, Typecheck
 
 **Files:**
+
 - Create: `.eslintrc.cjs`, `.prettierrc`, `.prettierignore`, `.eslintignore`
 - Modify: `package.json` (Scripts)
 
@@ -198,7 +211,11 @@ pnpm add -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin es
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:svelte/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:svelte/recommended'
+  ],
   plugins: ['@typescript-eslint'],
   parserOptions: {
     sourceType: 'module',
@@ -207,7 +224,11 @@ module.exports = {
   },
   env: { browser: true, es2022: true, node: true },
   overrides: [
-    { files: ['*.svelte'], parser: 'svelte-eslint-parser', parserOptions: { parser: '@typescript-eslint/parser' } }
+    {
+      files: ['*.svelte'],
+      parser: 'svelte-eslint-parser',
+      parserOptions: { parser: '@typescript-eslint/parser' }
+    }
   ],
   rules: {
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
@@ -255,9 +276,11 @@ pnpm-lock.yaml
 - [ ] **Step 6: Tooling-Smoke-Test**
 
 Run:
+
 ```bash
 pnpm lint && pnpm typecheck
 ```
+
 Expected: Beide Befehle ohne Fehler.
 
 - [ ] **Step 7: Commit**
@@ -272,6 +295,7 @@ git commit -m "chore: add ESLint, Prettier, svelte-check tooling"
 ### Task 4: Vitest-Setup
 
 **Files:**
+
 - Create: `vitest.config.ts`, `tests/unit/.gitkeep`
 - Modify: `package.json`
 
@@ -321,9 +345,11 @@ In `package.json`:
 - [ ] **Step 5: Vitest-Smoke-Test**
 
 Run:
+
 ```bash
 pnpm test
 ```
+
 Expected: „No test files found, exiting with code 0" oder ähnlich — kein Crash. Bei Fehler wegen leerem Pattern: das ist ok, der erste echte Test in Task 6 deckt das ab.
 
 - [ ] **Step 6: Commit**
@@ -340,6 +366,7 @@ git commit -m "test: configure Vitest with jsdom and testing-library"
 ### Task 5: Typen definieren
 
 **Files:**
+
 - Create: `src/lib/types.ts`
 
 - [ ] **Step 1: `src/lib/types.ts` schreiben**
@@ -384,9 +411,11 @@ export interface HistoryEntry {
 - [ ] **Step 2: Typecheck**
 
 Run:
+
 ```bash
 pnpm typecheck
 ```
+
 Expected: Kein Fehler.
 
 - [ ] **Step 3: Commit**
@@ -401,6 +430,7 @@ git commit -m "feat(types): define QrPayload, Preset, HistoryEntry"
 ### Task 6: Payload-Encoding (URL-Kind)
 
 **Files:**
+
 - Create: `tests/unit/payload.test.ts`
 - Create: `src/lib/payload.ts`
 
@@ -423,9 +453,11 @@ describe('payloadToQrString — url', () => {
 - [ ] **Step 2: Test fehlschlagen lassen**
 
 Run:
+
 ```bash
 pnpm test -- payload
 ```
+
 Expected: FAIL — `payloadToQrString` nicht gefunden.
 
 - [ ] **Step 3: Minimale Implementierung**
@@ -443,9 +475,11 @@ export function payloadToQrString(p: QrPayload): string {
 - [ ] **Step 4: Test grün**
 
 Run:
+
 ```bash
 pnpm test -- payload
 ```
+
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -460,6 +494,7 @@ git commit -m "feat(payload): encode url payload"
 ### Task 7: Payload-Encoding (Telefon)
 
 **Files:**
+
 - Modify: `tests/unit/payload.test.ts`
 - Modify: `src/lib/payload.ts`
 
@@ -470,9 +505,7 @@ In `tests/unit/payload.test.ts` ergänzen:
 ```ts
 describe('payloadToQrString — tel', () => {
   it('prefixes tel: scheme', () => {
-    expect(payloadToQrString({ kind: 'tel', value: '+4915112345678' })).toBe(
-      'tel:+4915112345678'
-    );
+    expect(payloadToQrString({ kind: 'tel', value: '+4915112345678' })).toBe('tel:+4915112345678');
   });
 });
 ```
@@ -480,9 +513,11 @@ describe('payloadToQrString — tel', () => {
 - [ ] **Step 2: Test fehlschlägt**
 
 Run:
+
 ```bash
 pnpm test -- payload
 ```
+
 Expected: 1 failed (tel-Test).
 
 - [ ] **Step 3: Implementierung erweitern**
@@ -496,9 +531,11 @@ if (p.kind === 'tel') return `tel:${p.value}`;
 - [ ] **Step 4: Test grün**
 
 Run:
+
 ```bash
 pnpm test -- payload
 ```
+
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -513,6 +550,7 @@ git commit -m "feat(payload): encode tel payload"
 ### Task 8: Payload-Encoding (Text)
 
 **Files:**
+
 - Modify: `tests/unit/payload.test.ts`
 - Modify: `src/lib/payload.ts`
 
@@ -552,6 +590,7 @@ git commit -m "feat(payload): encode text payload"
 ### Task 9: Payload-Encoding (WLAN inkl. Escape)
 
 **Files:**
+
 - Modify: `tests/unit/payload.test.ts`
 - Modify: `src/lib/payload.ts`
 
@@ -640,6 +679,7 @@ git commit -m "feat(payload): encode wifi payload with spec-compliant escaping"
 ### Task 10: Payload-Encoding (vCard)
 
 **Files:**
+
 - Modify: `tests/unit/payload.test.ts`
 - Modify: `src/lib/payload.ts`
 
@@ -670,9 +710,9 @@ describe('payloadToQrString — vcard', () => {
   });
 
   it('skips missing optional fields entirely', () => {
-    expect(
-      payloadToQrString({ kind: 'vcard', value: { name: 'A', email: 'a@b' } })
-    ).toBe('BEGIN:VCARD\nVERSION:3.0\nFN:A\nEMAIL:a@b\nEND:VCARD');
+    expect(payloadToQrString({ kind: 'vcard', value: { name: 'A', email: 'a@b' } })).toBe(
+      'BEGIN:VCARD\nVERSION:3.0\nFN:A\nEMAIL:a@b\nEND:VCARD'
+    );
   });
 });
 ```
@@ -718,6 +758,7 @@ git commit -m "feat(payload): encode vCard payload"
 ### Task 11: UUID-Helper mit Fallback
 
 **Files:**
+
 - Create: `tests/unit/uuid.test.ts`
 - Create: `src/lib/uuid.ts`
 
@@ -776,6 +817,7 @@ git commit -m "feat(uuid): randomId helper with randomUUID fallback"
 ### Task 12: QR-SVG-Generierung
 
 **Files:**
+
 - Create: `tests/unit/qr.test.ts`
 - Create: `src/lib/qr.ts`
 
@@ -830,8 +872,7 @@ export const QR_MAX_LENGTH = 1273;
 
 export async function payloadToSvg(text: string): Promise<string> {
   if (!text) throw new Error('QR text must not be empty');
-  if (text.length > QR_MAX_LENGTH)
-    throw new Error(`QR text exceeds ${QR_MAX_LENGTH} characters`);
+  if (text.length > QR_MAX_LENGTH) throw new Error(`QR text exceeds ${QR_MAX_LENGTH} characters`);
   return QRCode.toString(text, {
     type: 'svg',
     errorCorrectionLevel: 'H',
@@ -857,6 +898,7 @@ git commit -m "feat(qr): SVG generation with ECC-H and length guard"
 ### Task 13: Verlauf in LocalStorage
 
 **Files:**
+
 - Create: `tests/unit/history.test.ts`
 - Create: `src/lib/history.ts`
 
@@ -1011,6 +1053,7 @@ git commit -m "feat(history): localStorage-backed history with memory fallback"
 ### Task 14: Presets-Daten und Validator
 
 **Files:**
+
 - Create: `src/data/presets.json`
 - Create: `tests/unit/presets.test.ts`
 - Create: `src/lib/presets.ts`
@@ -1093,7 +1136,12 @@ describe('validatePresetsFile', () => {
       validatePresetsFile({
         version: 1,
         presets: [
-          { id: 'w', label: 'W', kind: 'wifi', value: { ssid: '', password: '', encryption: 'WPA' } }
+          {
+            id: 'w',
+            label: 'W',
+            kind: 'wifi',
+            value: { ssid: '', password: '', encryption: 'WPA' }
+          }
         ]
       })
     ).toThrow();
@@ -1201,6 +1249,7 @@ git commit -m "feat(presets): bundled presets with build-time validation"
 ### Task 15: Build-Hook für Preset-Validierung
 
 **Files:**
+
 - Create: `scripts/validate-presets.ts`
 - Modify: `package.json`
 
@@ -1222,10 +1271,8 @@ for (const p of raw.presets) {
   if (!p.id || seen.has(p.id)) throw new Error(`presets: bad id "${p.id}"`);
   seen.add(p.id);
   if (!p.label) throw new Error(`presets: "${p.id}" missing label`);
-  if (!VALID_KINDS.includes(p.kind))
-    throw new Error(`presets: "${p.id}" invalid kind "${p.kind}"`);
-  if (p.kind === 'wifi' && !p.value?.ssid)
-    throw new Error(`presets: "${p.id}" wifi missing ssid`);
+  if (!VALID_KINDS.includes(p.kind)) throw new Error(`presets: "${p.id}" invalid kind "${p.kind}"`);
+  if (p.kind === 'wifi' && !p.value?.ssid) throw new Error(`presets: "${p.id}" wifi missing ssid`);
 }
 
 console.log(`presets ok (${raw.presets.length} entries)`);
@@ -1254,9 +1301,11 @@ In `package.json`:
 - [ ] **Step 4: Smoke-Test**
 
 Run:
+
 ```bash
 pnpm validate:presets
 ```
+
 Expected: `presets ok (3 entries)`.
 
 - [ ] **Step 5: Commit**
@@ -1273,6 +1322,7 @@ git commit -m "build: validate presets.json before build"
 ### Task 16: Theme & Basis-Styling
 
 **Files:**
+
 - Modify: `src/app.html`
 - Create: `src/app.css`
 - Modify: `src/routes/+layout.svelte`
@@ -1317,7 +1367,12 @@ body {
   padding: 0;
   background: var(--bg);
   color: var(--fg);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
 }
@@ -1390,9 +1445,11 @@ input[type='password'] {
 - [ ] **Step 4: Smoke-Test im Dev-Server**
 
 Run:
+
 ```bash
 pnpm dev
 ```
+
 Browser auf `http://localhost:5173` öffnen. Schwarze Schrift auf weißem Hintergrund. `Ctrl-C`.
 
 - [ ] **Step 5: Commit**
@@ -1407,6 +1464,7 @@ git commit -m "style: high-contrast base theme with large tap targets"
 ### Task 17: `QrDisplay`-Komponente
 
 **Files:**
+
 - Create: `tests/unit/components/QrDisplay.test.ts`
 - Create: `src/lib/components/QrDisplay.svelte`
 
@@ -1521,6 +1579,7 @@ git commit -m "feat(ui): QrDisplay component with inverted variant"
 ### Task 18: `UrlInput`-Komponente
 
 **Files:**
+
 - Create: `tests/unit/components/UrlInput.test.ts`
 - Create: `src/lib/components/UrlInput.svelte`
 
@@ -1628,6 +1687,7 @@ git commit -m "feat(ui): UrlInput with clipboard paste and length guard"
 ### Task 19: `PresetGrid`-Komponente
 
 **Files:**
+
 - Create: `tests/unit/components/PresetGrid.test.ts`
 - Create: `src/lib/components/PresetGrid.svelte`
 
@@ -1679,22 +1739,28 @@ Run: `pnpm test -- PresetGrid` → FAIL.
   let { presets, onSelect }: Props = $props();
 </script>
 
-<div class="grid" role="list">
+<ul class="grid">
   {#each presets as p (p.id)}
-    <button type="button" role="listitem" onclick={() => onSelect(p)}>
-      {#if p.icon}<span class="icon" aria-hidden="true">{p.icon}</span>{/if}
-      <span class="label">{p.label}</span>
-    </button>
+    <li>
+      <button type="button" onclick={() => onSelect(p)}>
+        {#if p.icon}<span class="icon" aria-hidden="true">{p.icon}</span>{/if}
+        <span class="label">{p.label}</span>
+      </button>
+    </li>
   {/each}
-</div>
+</ul>
 
 <style>
   .grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
   .grid button {
+    width: 100%;
     flex-direction: column;
     min-height: 96px;
     padding: 1rem;
@@ -1724,6 +1790,7 @@ git commit -m "feat(ui): PresetGrid component"
 ### Task 20: `HistoryList`-Komponente
 
 **Files:**
+
 - Create: `src/lib/components/HistoryList.svelte`
 
 - [ ] **Step 1: Komponente implementieren**
@@ -1794,6 +1861,7 @@ git commit -m "feat(ui): HistoryList component"
 ### Task 21: Offline-Indikator
 
 **Files:**
+
 - Create: `src/lib/components/OfflineIndicator.svelte`
 
 - [ ] **Step 1: Komponente implementieren**
@@ -1819,7 +1887,8 @@ git commit -m "feat(ui): HistoryList component"
 </script>
 
 <span class="dot" class:offline={!online} aria-label={online ? 'Online' : 'Offline'}>
-  {online ? '🟢' : '🔴'} {online ? 'Online' : 'Offline'}
+  {online ? '🟢' : '🔴'}
+  {online ? 'Online' : 'Offline'}
 </span>
 
 <style>
@@ -1848,6 +1917,7 @@ git commit -m "feat(ui): OfflineIndicator using navigator.onLine"
 ### Task 22: Hauptansicht `/`
 
 **Files:**
+
 - Modify: `src/routes/+page.svelte`
 
 - [ ] **Step 1: Hauptansicht implementieren**
@@ -1923,11 +1993,7 @@ git commit -m "feat(ui): OfflineIndicator using navigator.onLine"
 
 <section aria-label="URL eingeben">
   <UrlInput value={url} onChange={(v) => (url = v)} />
-  <button
-    type="button"
-    disabled={!url || url.length > QR_MAX_LENGTH}
-    onclick={onUrlSubmit}
-  >
+  <button type="button" disabled={!url || url.length > QR_MAX_LENGTH} onclick={onUrlSubmit}>
     QR erzeugen
   </button>
 </section>
@@ -1978,6 +2044,7 @@ git commit -m "feat(routes): main view with presets, url input, history"
 ### Task 23: Vollbild-QR `/qr`
 
 **Files:**
+
 - Create: `src/routes/qr/+page.svelte`
 
 - [ ] **Step 1: Route implementieren**
@@ -2190,6 +2257,7 @@ git commit -m "feat(routes): fullscreen QR view with invert and share"
 ### Task 24: WLAN-Formular `/wifi`
 
 **Files:**
+
 - Create: `src/routes/wifi/+page.svelte`
 
 - [ ] **Step 1: Route implementieren**
@@ -2306,6 +2374,7 @@ git commit -m "feat(routes): wifi form with encryption and hidden options"
 ### Task 25: Telefon-Formular `/tel`
 
 **Files:**
+
 - Create: `src/routes/tel/+page.svelte`
 
 - [ ] **Step 1: Route implementieren**
@@ -2378,6 +2447,7 @@ git commit -m "feat(routes): tel form"
 ### Task 26: Kontakt/vCard-Formular `/contact`
 
 **Files:**
+
 - Create: `src/routes/contact/+page.svelte`
 
 - [ ] **Step 1: Route implementieren**
@@ -2465,6 +2535,7 @@ git commit -m "feat(routes): contact/vCard form"
 ### Task 27: Service Worker und Manifest
 
 **Files:**
+
 - Modify: `vite.config.ts`
 - Create: `static/manifest.webmanifest`
 - Create: `static/icons/192.png`, `static/icons/512.png`, `static/icons/maskable.png` (Platzhalter — schwarzer Hintergrund mit weißem „QR")
@@ -2565,17 +2636,21 @@ await generate('maskable.png', 512, 0);
 ```
 
 Run:
+
 ```bash
 pnpm icons
 ```
+
 Expected: `static/icons/192.png`, `static/icons/512.png`, `static/icons/maskable.png` existieren und sind valide PNGs.
 
 - [ ] **Step 5: Build-Test**
 
 Run:
+
 ```bash
 pnpm build
 ```
+
 Expected: Build erfolgreich, `build/sw.js` und `build/workbox-*.js` werden erzeugt, `build/manifest.webmanifest` und `build/icons/*.png` vorhanden.
 
 - [ ] **Step 6: Commit**
@@ -2590,6 +2665,7 @@ git commit -m "feat(pwa): service worker precache and manifest"
 ### Task 28: Update-Prompt-Komponente
 
 **Files:**
+
 - Create: `src/lib/components/UpdatePrompt.svelte`
 - Modify: `src/routes/+layout.svelte`
 
@@ -2693,9 +2769,11 @@ In `src/app.d.ts` (ggf. neu anlegen) am Anfang einfügen:
 ```
 
 Run:
+
 ```bash
 pnpm typecheck
 ```
+
 Expected: Kein Fehler.
 
 - [ ] **Step 4: Commit**
@@ -2712,6 +2790,7 @@ git commit -m "feat(pwa): user-confirmed update prompt"
 ### Task 29: Playwright-Setup
 
 **Files:**
+
 - Create: `playwright.config.ts`, `tests/e2e/.gitkeep`
 - Modify: `package.json`
 
@@ -2771,9 +2850,11 @@ test('main page loads', async ({ page }) => {
 ```
 
 Run:
+
 ```bash
 pnpm test:e2e
 ```
+
 Expected: 1 passed.
 
 - [ ] **Step 5: Commit**
@@ -2788,6 +2869,7 @@ git commit -m "test(e2e): configure Playwright with build+preview"
 ### Task 30: QR-Decode-Helper (Node-seitig, offline-fähig)
 
 **Files:**
+
 - Create: `tests/e2e/helpers/decode-qr.ts`
 
 **Hintergrund:** Decoding läuft komplett auf der Node-Seite (Playwright-Test-Runner). Wir holen das SVG-Markup aus der Page, rasterisieren es mit `sharp`, decodieren mit dem lokal installierten `jsqr`-npm-Paket. Kein Netzwerk im Browser-Kontext — Voraussetzung für Task 35 (Offline-Test).
@@ -2839,6 +2921,7 @@ git commit -m "test(e2e): node-side jsqr decode helper with sharp"
 ### Task 31: E2E Preset-Flow
 
 **Files:**
+
 - Create: `tests/e2e/preset-flow.spec.ts`
 
 - [ ] **Step 1: Test schreiben**
@@ -2850,7 +2933,7 @@ import { decodeVisibleQr } from './helpers/decode-qr';
 
 test('preset tap navigates to QR view and renders scannable QR', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('listitem', { name: /Lage aktuell/i }).click();
+  await page.getByRole('button', { name: /Lage aktuell/i }).click();
   await expect(page).toHaveURL(/\/qr\?/);
   await expect(page.locator('svg')).toBeVisible();
   const decoded = await decodeVisibleQr(page);
@@ -2861,9 +2944,11 @@ test('preset tap navigates to QR view and renders scannable QR', async ({ page }
 - [ ] **Step 2: Test grün**
 
 Run:
+
 ```bash
 pnpm test:e2e preset-flow
 ```
+
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -2878,6 +2963,7 @@ git commit -m "test(e2e): preset flow round-trip decode"
 ### Task 32: E2E URL-Flow
 
 **Files:**
+
 - Create: `tests/e2e/url-flow.spec.ts`
 
 - [ ] **Step 1: Test schreiben**
@@ -2912,6 +2998,7 @@ git commit -m "test(e2e): url input flow"
 ### Task 33: E2E WLAN-Flow
 
 **Files:**
+
 - Create: `tests/e2e/wifi-flow.spec.ts`
 
 - [ ] **Step 1: Test schreiben**
@@ -2947,6 +3034,7 @@ git commit -m "test(e2e): wifi flow with payload assertion"
 ### Task 34: E2E Verlauf
 
 **Files:**
+
 - Create: `tests/e2e/history.spec.ts`
 
 - [ ] **Step 1: Test schreiben**
@@ -2957,12 +3045,15 @@ import { test, expect } from '@playwright/test';
 
 test('history fills with last entries and links to QR', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('listitem', { name: /Lage aktuell/i }).click();
+  await page.getByRole('button', { name: /Lage aktuell/i }).click();
   await page.goBack();
-  await page.getByRole('listitem', { name: /Helfer-Anmeldung/i }).click();
+  await page.getByRole('button', { name: /Helfer-Anmeldung/i }).click();
   await page.goBack();
   await expect(page.getByRole('heading', { name: /Verlauf/i })).toBeVisible();
-  await page.getByRole('button', { name: /Helfer-Anmeldung/i }).first().click();
+  await page
+    .getByRole('button', { name: /Helfer-Anmeldung/i })
+    .first()
+    .click();
   await expect(page).toHaveURL(/\/qr\?/);
 });
 ```
@@ -2983,6 +3074,7 @@ git commit -m "test(e2e): history list flow"
 ### Task 35: E2E Offline
 
 **Files:**
+
 - Create: `tests/e2e/offline.spec.ts`
 
 - [ ] **Step 1: Test schreiben**
@@ -2998,7 +3090,7 @@ test('app works offline after first load', async ({ page, context }) => {
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole('heading', { name: 'QR-Generator' })).toBeVisible();
-  await page.getByRole('listitem', { name: /Lage aktuell/i }).click();
+  await page.getByRole('button', { name: /Lage aktuell/i }).click();
   expect(await decodeVisibleQr(page)).toBe('https://einsatz.drk-xy.de/lage');
 });
 ```
@@ -3021,6 +3113,7 @@ git commit -m "test(e2e): offline reload still works"
 ### Task 36: E2E PWA-Manifest
 
 **Files:**
+
 - Create: `tests/e2e/pwa-manifest.spec.ts`
 
 - [ ] **Step 1: Test schreiben**
@@ -3059,6 +3152,7 @@ git commit -m "test(e2e): pwa manifest contract"
 ### Task 37: GitHub Actions CI
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Workflow schreiben**
@@ -3112,9 +3206,11 @@ jobs:
 - [ ] **Step 2: Smoke (lokal mit `act` optional, sonst Push)**
 
 Lokal nur Schritte simulieren:
+
 ```bash
 pnpm install --frozen-lockfile && pnpm typecheck && pnpm lint && pnpm test && pnpm build
 ```
+
 Expected: Kein Fehler.
 
 - [ ] **Step 3: Commit**
@@ -3129,6 +3225,7 @@ git commit -m "ci: full pipeline (typecheck, lint, unit, e2e, build)"
 ### Task 38: Manuelle Test-Checkliste
 
 **Files:**
+
 - Create: `docs/manual-test.md`
 
 - [ ] **Step 1: Checkliste schreiben**
@@ -3139,29 +3236,35 @@ git commit -m "ci: full pipeline (typecheck, lint, unit, e2e, build)"
 Vor jedem Release auf einem realen Smartphone (iOS Safari + Android Chrome) durchführen.
 
 ## Installation
+
 - [ ] PWA installiert sich (Add to Home Screen) ohne aggressiven Auto-Prompt
 - [ ] Icon erscheint auf Home-Screen und wirkt nicht abgeschnitten
 
 ## Scan-Reichweite
+
 - [ ] Drei Presets aus 50 cm mit zweitem Smartphone scannbar
 - [ ] Drei Presets im Vollbild aus 1,5 m scannbar
 - [ ] Invertierter QR (Long-Press) ebenfalls scannbar
 
 ## Offline
+
 - [ ] App geladen → Flugmodus → Reload → Hauptansicht funktioniert
 - [ ] Preset im Flugmodus → QR erscheint
 - [ ] WLAN-Flow im Flugmodus
 
 ## Real-World
+
 - [ ] Generierter WLAN-QR verbindet zweites Gerät tatsächlich (WPA, leeres Passwort, Sonderzeichen im SSID)
 - [ ] Tel-QR öffnet Telefon-App
 - [ ] vCard-QR fügt Kontakt hinzu
 
 ## Update
+
 - [ ] Neue Version deployed → Update-Badge erscheint → „Später" funktioniert (kein Reload)
 - [ ] „Anwenden" lädt neue Version
 
 ## Bedienung
+
 - [ ] Tap-Targets fühlen sich groß an (Handschuhe oder Stress simulieren)
 - [ ] Maximale Helligkeit verbessert Scan-Distanz spürbar
 ```
@@ -3178,11 +3281,12 @@ git commit -m "docs: manual test checklist"
 ### Task 39: README
 
 **Files:**
+
 - Create: `README.md`
 
 - [ ] **Step 1: README schreiben**
 
-```markdown
+````markdown
 # QR-Generator
 
 Offline-fähige PWA für schnelle QR-Code-Erzeugung im Katastrophenschutz-Einsatz.
@@ -3193,18 +3297,19 @@ Offline-fähige PWA für schnelle QR-Code-Erzeugung im Katastrophenschutz-Einsat
 pnpm install
 pnpm dev
 ```
+````
 
 ## Skripte
 
-| Script | Beschreibung |
-|---|---|
-| `pnpm dev` | Entwicklungsserver |
-| `pnpm build` | Produktions-Build (validiert vorher `presets.json`) |
-| `pnpm preview` | Vorschau des Builds |
-| `pnpm test` | Unit-Tests (Vitest) |
-| `pnpm test:e2e` | E2E-Tests (Playwright) |
-| `pnpm lint` | ESLint + Prettier-Check |
-| `pnpm typecheck` | svelte-check + tsc --noEmit |
+| Script           | Beschreibung                                        |
+| ---------------- | --------------------------------------------------- |
+| `pnpm dev`       | Entwicklungsserver                                  |
+| `pnpm build`     | Produktions-Build (validiert vorher `presets.json`) |
+| `pnpm preview`   | Vorschau des Builds                                 |
+| `pnpm test`      | Unit-Tests (Vitest)                                 |
+| `pnpm test:e2e`  | E2E-Tests (Playwright)                              |
+| `pnpm lint`      | ESLint + Prettier-Check                             |
+| `pnpm typecheck` | svelte-check + tsc --noEmit                         |
 
 ## Presets anpassen
 
@@ -3217,20 +3322,22 @@ Static Build (`build/`) auf Cloudflare Pages. Output-Dir: `build`.
 ## Manuelle Tests
 
 Siehe `docs/manual-test.md`.
-```
+
+````
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add README.md
 git commit -m "docs: README with setup and scripts"
-```
+````
 
 ---
 
 ### Task 40: Cloudflare-Pages-Konfiguration
 
 **Files:**
+
 - Create: `.nvmrc` (optional), README-Eintrag
 
 - [ ] **Step 1: Build-Settings dokumentieren**
@@ -3274,6 +3381,7 @@ git commit -m "docs: cloudflare pages configuration notes"
 - [ ] **Step 1: Build & Größen-Messung**
 
 Run:
+
 ```bash
 pnpm build
 du -sh build/_app build/sw.js build/workbox-*.js 2>/dev/null
@@ -3285,9 +3393,11 @@ Erwartung: gzipped-Summe der App-Assets (ohne `qrcode`-Lib) < 100 KB. `qrcode` s
 - [ ] **Step 2: Optional `vite-bundle-visualizer` für Diagnose**
 
 Falls Budget überschritten:
+
 ```bash
 pnpm dlx vite-bundle-visualizer
 ```
+
 und prüfen, ob unnötige Polyfills oder Mehrfach-Bundles auftauchen.
 
 - [ ] **Step 3: Commit**
@@ -3301,9 +3411,11 @@ Falls keine Änderungen nötig: kein Commit. Sonst entsprechende Fixes committen
 - [ ] **Step 1: Volle Pipeline lokal**
 
 Run:
+
 ```bash
 pnpm typecheck && pnpm lint && pnpm test && pnpm test:e2e && pnpm build
 ```
+
 Expected: Alle Schritte grün.
 
 - [ ] **Step 2: Manuelle Test-Checkliste**

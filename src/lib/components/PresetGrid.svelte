@@ -8,22 +8,28 @@
   let { presets, onSelect }: Props = $props();
 </script>
 
-<div class="grid" role="list">
+<ul class="grid">
   {#each presets as p (p.id)}
-    <button type="button" role="listitem" aria-label={p.label} onclick={() => onSelect(p)}>
-      {#if p.icon}<span class="icon" aria-hidden="true">{p.icon}</span>{/if}
-      <span class="label">{p.label}</span>
-    </button>
+    <li>
+      <button type="button" onclick={() => onSelect(p)}>
+        {#if p.icon}<span class="icon" aria-hidden="true">{p.icon}</span>{/if}
+        <span class="label">{p.label}</span>
+      </button>
+    </li>
   {/each}
-</div>
+</ul>
 
 <style>
   .grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
   .grid button {
+    width: 100%;
     flex-direction: column;
     min-height: 96px;
     padding: 1rem;
