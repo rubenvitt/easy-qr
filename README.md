@@ -29,6 +29,12 @@ pnpm dev
 
 Static Build (`build/`) auf Cloudflare Pages. Output-Dir: `build`.
 
+## Cloudflare-Pages-Konfiguration
+
+- Build command: `pnpm install --frozen-lockfile && pnpm build`
+- Output: `build`
+- ENV: `NODE_VERSION=20`
+
 ## Manuelle Tests
 
 Siehe `docs/manual-test.md`.
