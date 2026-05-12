@@ -10,7 +10,7 @@
 
 <div class="grid" role="list">
   {#each presets as p (p.id)}
-    <button type="button" role="listitem" onclick={() => onSelect(p)}>
+    <button type="button" role="listitem" aria-label={p.label} onclick={() => onSelect(p)}>
       {#if p.icon}<span class="icon" aria-hidden="true">{p.icon}</span>{/if}
       <span class="label">{p.label}</span>
     </button>
