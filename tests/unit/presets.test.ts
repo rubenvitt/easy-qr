@@ -46,6 +46,15 @@ describe('validatePresetsFile', () => {
       })
     ).toThrow();
   });
+
+  it('rejects vcard without name', () => {
+    expect(() =>
+      validatePresetsFile({
+        version: 1,
+        presets: [{ id: 'v', label: 'V', kind: 'vcard', value: { tel: '123' } }]
+      })
+    ).toThrow();
+  });
 });
 
 describe('allPresets / getPreset', () => {

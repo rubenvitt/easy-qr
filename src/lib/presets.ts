@@ -30,6 +30,11 @@ export function validatePresetsFile(input: unknown): asserts input is PresetsFil
       if (!v || typeof v.ssid !== 'string' || !v.ssid)
         throw new Error(`presets: wifi entry "${r.id}" missing ssid`);
     }
+    if (r.kind === 'vcard') {
+      const v = r.value as { name?: unknown } | undefined;
+      if (!v || typeof v.name !== 'string' || !v.name)
+        throw new Error(`presets: vcard entry "${r.id}" missing name`);
+    }
     if ((r.kind === 'url' || r.kind === 'tel' || r.kind === 'text') && !r.value)
       throw new Error(`presets: "${r.id}" missing value`);
   }
