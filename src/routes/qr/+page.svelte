@@ -132,7 +132,12 @@
     onpointerdown={onPressStart}
     onpointerup={onPressEnd}
     onpointercancel={onPressEnd}
-    onkeydown={(e) => e.key === 'Enter' && toggleFullscreen()}
+    onkeydown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    }}
   >
     <QrDisplay text={data} {inverted} />
   </div>
