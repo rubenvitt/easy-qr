@@ -1,8 +1,10 @@
 <script lang="ts">
   import '../app.css';
+  import UpdatePrompt from '$lib/components/UpdatePrompt.svelte';
   let { children } = $props();
 </script>
 
+<UpdatePrompt />
 <main>{@render children()}</main>
 
 <style>
