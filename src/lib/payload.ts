@@ -21,10 +21,19 @@ function encodeVcard(v: Extract<QrPayload, { kind: 'vcard' }>['value']): string 
 }
 
 export function payloadToQrString(p: QrPayload): string {
-  if (p.kind === 'url') return p.value;
-  if (p.kind === 'tel') return `tel:${p.value}`;
-  if (p.kind === 'text') return p.value;
-  if (p.kind === 'wifi') return encodeWifi(p.value);
-  if (p.kind === 'vcard') return encodeVcard(p.value);
-  throw new Error(`Unsupported kind: ${(p as { kind: string }).kind}`);
+  switch (p.kind) {
+    case 'url':
+    case 'text':
+      return p.value;
+    case 'tel':
+      return `tel:${p.value}`;
+    case 'wifi':
+      return encodeWifi(p.value);
+    case 'vcard':
+      return encodeVcard(p.value);
+    default: {
+      const _exhaustive: never = p;
+      throw new Error(`Unsupported kind: ${JSON.stringify(_exhaustive)}`);
+    }
+  }
 }
