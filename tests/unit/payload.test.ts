@@ -60,3 +60,33 @@ describe('payloadToQrString — wifi', () => {
     ).toBe('WIFI:T:WPA;S:A\\;B\\,C\\:D\\"E\\\\F;P:p\\;a\\"b\\\\;H:false;;');
   });
 });
+
+describe('payloadToQrString — vcard', () => {
+  it('encodes minimal vCard (name only)', () => {
+    expect(payloadToQrString({ kind: 'vcard', value: { name: 'Max Mustermann' } })).toBe(
+      'BEGIN:VCARD\nVERSION:3.0\nFN:Max Mustermann\nEND:VCARD'
+    );
+  });
+
+  it('includes optional fields when present', () => {
+    expect(
+      payloadToQrString({
+        kind: 'vcard',
+        value: {
+          name: 'Erika',
+          tel: '+491701234567',
+          email: 'erika@drk.de',
+          org: 'DRK Kreisverband'
+        }
+      })
+    ).toBe(
+      'BEGIN:VCARD\nVERSION:3.0\nFN:Erika\nTEL:+491701234567\nEMAIL:erika@drk.de\nORG:DRK Kreisverband\nEND:VCARD'
+    );
+  });
+
+  it('skips missing optional fields entirely', () => {
+    expect(
+      payloadToQrString({ kind: 'vcard', value: { name: 'A', email: 'a@b' } })
+    ).toBe('BEGIN:VCARD\nVERSION:3.0\nFN:A\nEMAIL:a@b\nEND:VCARD');
+  });
+});
