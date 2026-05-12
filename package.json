@@ -30,6 +30,7 @@
 		"@testing-library/svelte": "^5.3.1",
 		"@testing-library/user-event": "^14.6.1",
 		"@types/node": "^25.6.2",
+		"@types/qrcode": "^1.5.6",
 		"eslint": "^10.3.0",
 		"eslint-plugin-svelte": "^3.17.1",
 		"globals": "^17.6.0",
@@ -43,5 +44,8 @@
 		"typescript-eslint": "^8.59.2",
 		"vite": "^8.0.7",
 		"vitest": "^4.1.6"
+	},
+	"dependencies": {
+		"qrcode": "^1.5.4"
 	}
 }
