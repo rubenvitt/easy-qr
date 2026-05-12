@@ -15,7 +15,8 @@ export default [
       parserOptions: { ecmaVersion: 2022, sourceType: 'module' }
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'svelte/no-navigation-without-resolve': 'off'
     }
   },
   {
