@@ -12,10 +12,8 @@ for (const p of raw.presets) {
   if (!p.id || seen.has(p.id)) throw new Error(`presets: bad id "${p.id}"`);
   seen.add(p.id);
   if (!p.label) throw new Error(`presets: "${p.id}" missing label`);
-  if (!VALID_KINDS.includes(p.kind))
-    throw new Error(`presets: "${p.id}" invalid kind "${p.kind}"`);
-  if (p.kind === 'wifi' && !p.value?.ssid)
-    throw new Error(`presets: "${p.id}" wifi missing ssid`);
+  if (!VALID_KINDS.includes(p.kind)) throw new Error(`presets: "${p.id}" invalid kind "${p.kind}"`);
+  if (p.kind === 'wifi' && !p.value?.ssid) throw new Error(`presets: "${p.id}" wifi missing ssid`);
 }
 
 console.log(`presets ok (${raw.presets.length} entries)`);

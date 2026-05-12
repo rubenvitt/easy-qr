@@ -11,9 +11,7 @@ describe('payloadToQrString — url', () => {
 
 describe('payloadToQrString — tel', () => {
   it('prefixes tel: scheme', () => {
-    expect(payloadToQrString({ kind: 'tel', value: '+4915112345678' })).toBe(
-      'tel:+4915112345678'
-    );
+    expect(payloadToQrString({ kind: 'tel', value: '+4915112345678' })).toBe('tel:+4915112345678');
   });
 });
 
@@ -85,9 +83,9 @@ describe('payloadToQrString — vcard', () => {
   });
 
   it('skips missing optional fields entirely', () => {
-    expect(
-      payloadToQrString({ kind: 'vcard', value: { name: 'A', email: 'a@b' } })
-    ).toBe('BEGIN:VCARD\nVERSION:3.0\nFN:A\nEMAIL:a@b\nEND:VCARD');
+    expect(payloadToQrString({ kind: 'vcard', value: { name: 'A', email: 'a@b' } })).toBe(
+      'BEGIN:VCARD\nVERSION:3.0\nFN:A\nEMAIL:a@b\nEND:VCARD'
+    );
   });
 });
 

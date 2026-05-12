@@ -41,7 +41,12 @@ describe('validatePresetsFile', () => {
       validatePresetsFile({
         version: 1,
         presets: [
-          { id: 'w', label: 'W', kind: 'wifi', value: { ssid: '', password: '', encryption: 'WPA' } }
+          {
+            id: 'w',
+            label: 'W',
+            kind: 'wifi',
+            value: { ssid: '', password: '', encryption: 'WPA' }
+          }
         ]
       })
     ).toThrow();

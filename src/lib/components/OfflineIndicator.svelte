@@ -17,7 +17,8 @@
 </script>
 
 <span class="dot" class:offline={!online} aria-label={online ? 'Online' : 'Offline'}>
-  {online ? '🟢' : '🔴'} {online ? 'Online' : 'Offline'}
+  {online ? '🟢' : '🔴'}
+  {online ? 'Online' : 'Offline'}
 </span>
 
 <style>

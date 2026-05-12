@@ -24,19 +24,19 @@ Drei Taps vom Home-Screen zu einem scannbaren Vollbild-QR — komplett offline.
 
 ## 2. Technologie-Stack
 
-| Bereich | Wahl | Begründung |
-|---|---|---|
-| Framework | **SvelteKit** mit `@sveltejs/adapter-static` | Reaktivität ohne Overhead, sehr kleines Bundle, eingebautes Routing |
-| Sprache | **TypeScript** durchgehend | Typisierung der Payload-Varianten, build-time Sicherheit |
-| Build-Tool | **Vite** | SvelteKit-Standard |
-| Package Manager | **pnpm** | Nutzerpräferenz; schnell, plattensparend, strikte Auflösung |
-| QR-Library | **`qrcode`** (npm) | Bewährt, SVG-Output, ECC-Level konfigurierbar |
-| PWA | **`@vite-pwa/sveltekit`** (Workbox) | Service Worker, Manifest, Offline-Precache |
-| Test (Unit) | **Vitest** + `@testing-library/svelte` | Vite-Integration, schnell |
-| Test (E2E) | **Playwright** | Cross-Browser, Offline-Simulation |
-| QR-Decoder im Test | **`jsqr`** | Round-Trip-Verifikation |
-| Hosting | **Cloudflare Pages** | Schnelles CDN, gratis Tier, Static-Adapter-kompatibel |
-| CI | **GitHub Actions** | Standard, gratis für public/private Repos |
+| Bereich            | Wahl                                         | Begründung                                                          |
+| ------------------ | -------------------------------------------- | ------------------------------------------------------------------- |
+| Framework          | **SvelteKit** mit `@sveltejs/adapter-static` | Reaktivität ohne Overhead, sehr kleines Bundle, eingebautes Routing |
+| Sprache            | **TypeScript** durchgehend                   | Typisierung der Payload-Varianten, build-time Sicherheit            |
+| Build-Tool         | **Vite**                                     | SvelteKit-Standard                                                  |
+| Package Manager    | **pnpm**                                     | Nutzerpräferenz; schnell, plattensparend, strikte Auflösung         |
+| QR-Library         | **`qrcode`** (npm)                           | Bewährt, SVG-Output, ECC-Level konfigurierbar                       |
+| PWA                | **`@vite-pwa/sveltekit`** (Workbox)          | Service Worker, Manifest, Offline-Precache                          |
+| Test (Unit)        | **Vitest** + `@testing-library/svelte`       | Vite-Integration, schnell                                           |
+| Test (E2E)         | **Playwright**                               | Cross-Browser, Offline-Simulation                                   |
+| QR-Decoder im Test | **`jsqr`**                                   | Round-Trip-Verifikation                                             |
+| Hosting            | **Cloudflare Pages**                         | Schnelles CDN, gratis Tier, Static-Adapter-kompatibel               |
+| CI                 | **GitHub Actions**                           | Standard, gratis für public/private Repos                           |
 
 **Keine externen Laufzeit-Abhängigkeiten:** keine CDNs, keine Google Fonts, keine Analytics, keine Tracker.
 
@@ -130,11 +130,19 @@ Analog: `/tel` (eine Nummer) und `/contact` (Name + optional Tel/E-Mail/Org → 
 
 ```ts
 export type QrPayload =
-  | { kind: 'url';   value: string }
-  | { kind: 'wifi';  value: { ssid: string; password: string; encryption: 'WPA' | 'WEP' | 'nopass'; hidden?: boolean } }
-  | { kind: 'tel';   value: string }
+  | { kind: 'url'; value: string }
+  | {
+      kind: 'wifi';
+      value: {
+        ssid: string;
+        password: string;
+        encryption: 'WPA' | 'WEP' | 'nopass';
+        hidden?: boolean;
+      };
+    }
+  | { kind: 'tel'; value: string }
   | { kind: 'vcard'; value: { name: string; tel?: string; email?: string; org?: string } }
-  | { kind: 'text';  value: string };
+  | { kind: 'text'; value: string };
 
 export interface Preset {
   id: string;
@@ -145,10 +153,10 @@ export interface Preset {
 }
 
 export interface HistoryEntry {
-  id: string;          // crypto.randomUUID() oder Fallback
+  id: string; // crypto.randomUUID() oder Fallback
   label: string;
   payload: QrPayload;
-  createdAt: number;   // Date.now()
+  createdAt: number; // Date.now()
 }
 ```
 
@@ -196,13 +204,13 @@ export interface HistoryEntry {
 
 ### Payload → QR-Text-Encoding
 
-| `kind` | QR-Text |
-|---|---|
-| `url` | `<value>` |
-| `wifi` | `WIFI:T:<enc>;S:<ssid-escaped>;P:<pw-escaped>;H:<true/false>;;` |
-| `tel` | `tel:<number>` |
+| `kind`  | QR-Text                                                                               |
+| ------- | ------------------------------------------------------------------------------------- |
+| `url`   | `<value>`                                                                             |
+| `wifi`  | `WIFI:T:<enc>;S:<ssid-escaped>;P:<pw-escaped>;H:<true/false>;;`                       |
+| `tel`   | `tel:<number>`                                                                        |
 | `vcard` | `BEGIN:VCARD\nVERSION:3.0\nFN:<name>\nTEL:<tel>\nEMAIL:<email>\nORG:<org>\nEND:VCARD` |
-| `text` | `<value>` |
+| `text`  | `<value>`                                                                             |
 
 WIFI-Escape: `\`, `;`, `,`, `"`, `:` müssen mit `\` escaped werden.
 `payload.ts` exportiert eine reine Funktion `payloadToQrString(p: QrPayload): string` — vollständig DOM-frei testbar.
@@ -251,21 +259,21 @@ Einmaliger, dismissbarer Hinweis „Auf Startbildschirm hinzufügen für Offline
 
 ## 7. Fehlerfälle & Edge Cases
 
-| Szenario | Verhalten |
-|---|---|
-| URL leer / ungültig | Generieren disabled, sanfter Hint, keine Pop-ups |
-| URL > 2.953 Zeichen | Inline-Warnung, Generieren blockiert |
-| `navigator.clipboard.readText` verweigert | Paste-Button fängt ab, Hint + Fokus ins Input |
-| `presets.json` kaputt | Build crasht (Build-Time-Validierung) |
-| LocalStorage voll/verweigert | In-Memory-Verlauf, kein User-Error |
-| LocalStorage-Schema veraltet | Verworfen, kein Crash |
-| Fullscreen-API verweigert | CSS-Pseudo-Fullscreen (fixed, inset-0, z-index hoch) |
-| Web Share API fehlt | Teilen-Button versteckt, Download bleibt |
-| `crypto.randomUUID` fehlt | Fallback: `Date.now() + Math.random().toString(36)` |
-| Service Worker scheitert | App läuft normal (nur ohne Offline) |
-| Update + offener QR | Badge erscheint, kein Auto-Reload |
-| Lange URL im Vollbild | Truncate mit Tap-zum-Expandieren |
-| WLAN-Passwort mit Sonderzeichen | Korrektes Escape gemäß WIFI-Spec |
+| Szenario                                  | Verhalten                                            |
+| ----------------------------------------- | ---------------------------------------------------- |
+| URL leer / ungültig                       | Generieren disabled, sanfter Hint, keine Pop-ups     |
+| URL > 2.953 Zeichen                       | Inline-Warnung, Generieren blockiert                 |
+| `navigator.clipboard.readText` verweigert | Paste-Button fängt ab, Hint + Fokus ins Input        |
+| `presets.json` kaputt                     | Build crasht (Build-Time-Validierung)                |
+| LocalStorage voll/verweigert              | In-Memory-Verlauf, kein User-Error                   |
+| LocalStorage-Schema veraltet              | Verworfen, kein Crash                                |
+| Fullscreen-API verweigert                 | CSS-Pseudo-Fullscreen (fixed, inset-0, z-index hoch) |
+| Web Share API fehlt                       | Teilen-Button versteckt, Download bleibt             |
+| `crypto.randomUUID` fehlt                 | Fallback: `Date.now() + Math.random().toString(36)`  |
+| Service Worker scheitert                  | App läuft normal (nur ohne Offline)                  |
+| Update + offener QR                       | Badge erscheint, kein Auto-Reload                    |
+| Lange URL im Vollbild                     | Truncate mit Tap-zum-Expandieren                     |
+| WLAN-Passwort mit Sonderzeichen           | Korrektes Escape gemäß WIFI-Spec                     |
 
 ### Display-Robustheit
 

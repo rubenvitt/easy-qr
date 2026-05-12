@@ -68,11 +68,7 @@
 
 <section aria-label="URL eingeben">
   <UrlInput value={url} onChange={(v) => (url = v)} />
-  <button
-    type="button"
-    disabled={!url || url.length > QR_MAX_LENGTH}
-    onclick={onUrlSubmit}
-  >
+  <button type="button" disabled={!url || url.length > QR_MAX_LENGTH} onclick={onUrlSubmit}>
     QR erzeugen
   </button>
 </section>
