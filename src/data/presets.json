@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "presets": [
+    {
+      "id": "lage-aktuell",
+      "label": "Lage aktuell",
+      "icon": "📍",
+      "kind": "url",
+      "value": "https://einsatz.drk-xy.de/lage"
+    },
+    {
+      "id": "helfer-anmeldung",
+      "label": "Helfer-Anmeldung",
+      "icon": "🙋",
+      "kind": "url",
+      "value": "https://einsatz.drk-xy.de/helfer"
+    },
+    {
+      "id": "betreuung-wlan",
+      "label": "WLAN Betreuungsstelle",
+      "icon": "📶",
+      "kind": "wifi",
+      "value": { "ssid": "DRK-Gast", "password": "wechselt-pro-einsatz", "encryption": "WPA" }
+    }
+  ]
+}
