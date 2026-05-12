@@ -6,6 +6,8 @@
 
   let data = $derived($page.url.searchParams.get('data') ?? '');
   let label = $derived($page.url.searchParams.get('label') ?? '');
+  let kind = $derived($page.url.searchParams.get('kind') ?? '');
+  let showRawData = $derived(kind !== 'wifi' && kind !== 'vcard');
   let inverted = $state(false);
   let nativeFullscreen = $state(false);
   let cssFullscreen = $state(false);
@@ -74,12 +76,18 @@
     const blob = new Blob([xml], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     const img = new Image();
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+    };
     img.onload = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 1024;
       canvas.height = 1024;
       const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        return;
+      }
       ctx.fillStyle = inverted ? '#000' : '#fff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       if (inverted) {
@@ -88,11 +96,16 @@
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       ctx.filter = 'none';
       canvas.toBlob((png) => {
-        if (!png) return;
+        if (!png) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        const pngUrl = URL.createObjectURL(png);
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(png);
+        a.href = pngUrl;
         a.download = `${label || 'qr'}.png`;
         a.click();
+        setTimeout(() => URL.revokeObjectURL(pngUrl), 0);
       }, 'image/png');
       URL.revokeObjectURL(url);
     };
@@ -124,7 +137,9 @@
     <QrDisplay text={data} {inverted} />
   </div>
 
-  <p class="data">{data}</p>
+  {#if showRawData}
+    <p class="data">{data}</p>
+  {/if}
   <p class="hint">Helligkeit auf Maximum für besseres Scannen.</p>
 
   <div class="actions">
