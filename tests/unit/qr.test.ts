@@ -18,7 +18,7 @@ describe('payloadToSvg', () => {
     await expect(payloadToSvg('')).rejects.toThrow();
   });
 
-  it('rejects input longer than 2953 characters', async () => {
-    await expect(payloadToSvg('a'.repeat(2954))).rejects.toThrow();
+  it('rejects input longer than QR_MAX_LENGTH', async () => {
+    await expect(payloadToSvg('a'.repeat(1274))).rejects.toThrow();
   });
 });

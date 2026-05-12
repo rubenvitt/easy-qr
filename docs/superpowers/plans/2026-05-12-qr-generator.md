@@ -810,8 +810,8 @@ describe('payloadToSvg', () => {
     await expect(payloadToSvg('')).rejects.toThrow();
   });
 
-  it('rejects input longer than 2953 characters', async () => {
-    await expect(payloadToSvg('a'.repeat(2954))).rejects.toThrow();
+  it('rejects input longer than QR_MAX_LENGTH', async () => {
+    await expect(payloadToSvg('a'.repeat(1274))).rejects.toThrow();
   });
 });
 ```
@@ -826,7 +826,7 @@ Run: `pnpm test -- qr` → FAIL.
 // src/lib/qr.ts
 import QRCode from 'qrcode';
 
-export const QR_MAX_LENGTH = 2953;
+export const QR_MAX_LENGTH = 1273;
 
 export async function payloadToSvg(text: string): Promise<string> {
   if (!text) throw new Error('QR text must not be empty');
@@ -1916,7 +1916,7 @@ git commit -m "feat(ui): OfflineIndicator using navigator.onLine"
   <UrlInput value={url} onChange={(v) => (url = v)} />
   <button
     type="button"
-    disabled={!url || url.length > 2953}
+    disabled={!url || url.length > 1273}
     onclick={onUrlSubmit}
   >
     QR erzeugen

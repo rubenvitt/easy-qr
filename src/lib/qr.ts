@@ -1,6 +1,6 @@
 import QRCode from 'qrcode';
 
-export const QR_MAX_LENGTH = 2953;
+export const QR_MAX_LENGTH = 1273;
 
 export async function payloadToSvg(text: string): Promise<string> {
   if (!text) throw new Error('QR text must not be empty');
