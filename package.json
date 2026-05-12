@@ -10,6 +10,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"validate:presets": "tsx scripts/validate-presets.ts",
+		"icons": "tsx scripts/generate-icons.ts",
 		"prebuild": "pnpm validate:presets",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -33,12 +34,14 @@
 		"@testing-library/user-event": "^14.6.1",
 		"@types/node": "^25.6.2",
 		"@types/qrcode": "^1.5.6",
+		"@vite-pwa/sveltekit": "^1.1.0",
 		"eslint": "^10.3.0",
 		"eslint-plugin-svelte": "^3.17.1",
 		"globals": "^17.6.0",
 		"jsdom": "^29.1.1",
 		"prettier": "^3.8.3",
 		"prettier-plugin-svelte": "^3.5.2",
+		"sharp": "^0.34.5",
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
 		"svelte-eslint-parser": "^1.6.1",
@@ -46,7 +49,8 @@
 		"typescript": "^6.0.2",
 		"typescript-eslint": "^8.59.2",
 		"vite": "^8.0.7",
-		"vitest": "^4.1.6"
+		"vitest": "^4.1.6",
+		"workbox-window": "^7.4.1"
 	},
 	"dependencies": {
 		"qrcode": "^1.5.4"
