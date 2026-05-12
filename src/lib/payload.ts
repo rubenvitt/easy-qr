@@ -11,11 +11,15 @@ function encodeWifi(v: Extract<QrPayload, { kind: 'wifi' }>['value']): string {
   return `WIFI:T:${v.encryption};S:${s};P:${p};H:${h};;`;
 }
 
+function escapeVcardText(s: string): string {
+  return s.replace(/([\\;,])/g, '\\$1').replace(/\r?\n/g, '\\n');
+}
+
 function encodeVcard(v: Extract<QrPayload, { kind: 'vcard' }>['value']): string {
-  const lines = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${v.name}`];
-  if (v.tel) lines.push(`TEL:${v.tel}`);
-  if (v.email) lines.push(`EMAIL:${v.email}`);
-  if (v.org) lines.push(`ORG:${v.org}`);
+  const lines = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${escapeVcardText(v.name)}`];
+  if (v.tel) lines.push(`TEL:${escapeVcardText(v.tel)}`);
+  if (v.email) lines.push(`EMAIL:${escapeVcardText(v.email)}`);
+  if (v.org) lines.push(`ORG:${escapeVcardText(v.org)}`);
   lines.push('END:VCARD');
   return lines.join('\n');
 }

@@ -90,3 +90,23 @@ describe('payloadToQrString — vcard', () => {
     ).toBe('BEGIN:VCARD\nVERSION:3.0\nFN:A\nEMAIL:a@b\nEND:VCARD');
   });
 });
+
+describe('payloadToQrString — vcard escaping', () => {
+  it('escapes semicolons and commas in text fields', () => {
+    expect(
+      payloadToQrString({
+        kind: 'vcard',
+        value: { name: 'Mustermann, Max', org: 'DRK; Kreisverband XY' }
+      })
+    ).toBe('BEGIN:VCARD\nVERSION:3.0\nFN:Mustermann\\, Max\nORG:DRK\\; Kreisverband XY\nEND:VCARD');
+  });
+
+  it('escapes backslashes and newlines in text fields', () => {
+    expect(
+      payloadToQrString({
+        kind: 'vcard',
+        value: { name: 'A\\B', email: 'a\nb@x' }
+      })
+    ).toBe('BEGIN:VCARD\nVERSION:3.0\nFN:A\\\\B\nEMAIL:a\\nb@x\nEND:VCARD');
+  });
+});
