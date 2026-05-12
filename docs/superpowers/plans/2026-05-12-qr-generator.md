@@ -1995,6 +1995,7 @@ git commit -m "feat(routes): main view with presets, url input, history"
   let cssFullscreen = $state(false);
   let qrEl = $state<HTMLDivElement | null>(null);
   let pressTimer: ReturnType<typeof setTimeout> | null = null;
+  let pressFired = $state(false);
 
   onMount(() => {
     const onFs = () => {
@@ -2006,6 +2007,10 @@ git commit -m "feat(routes): main view with presets, url input, history"
   });
 
   async function toggleFullscreen() {
+    if (pressFired) {
+      pressFired = false;
+      return;
+    }
     if (!qrEl) return;
     if (nativeFullscreen) {
       await document.exitFullscreen?.();
@@ -2023,7 +2028,12 @@ git commit -m "feat(routes): main view with presets, url input, history"
   }
 
   function onPressStart() {
-    pressTimer = setTimeout(() => (inverted = !inverted), 600);
+    onPressEnd();
+    pressFired = false;
+    pressTimer = setTimeout(() => {
+      inverted = !inverted;
+      pressFired = true;
+    }, 600);
   }
 
   function onPressEnd() {
