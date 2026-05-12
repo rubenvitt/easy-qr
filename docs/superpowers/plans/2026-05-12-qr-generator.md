@@ -1863,6 +1863,7 @@ git commit -m "feat(ui): OfflineIndicator using navigator.onLine"
   import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
   import { allPresets } from '$lib/presets';
   import { payloadToQrString } from '$lib/payload';
+  import { QR_MAX_LENGTH } from '$lib/qr';
   import { loadHistory, addEntry } from '$lib/history';
   import { randomId } from '$lib/uuid';
   import type { Preset, HistoryEntry, QrPayload } from '$lib/types';
@@ -1893,7 +1894,7 @@ git commit -m "feat(ui): OfflineIndicator using navigator.onLine"
   }
 
   function onPreset(p: Preset) {
-    recordAndNavigate(p.label, { kind: p.kind, value: p.value } as QrPayload);
+    recordAndNavigate(p.label, p);
   }
 
   function onUrlSubmit() {
@@ -1924,7 +1925,7 @@ git commit -m "feat(ui): OfflineIndicator using navigator.onLine"
   <UrlInput value={url} onChange={(v) => (url = v)} />
   <button
     type="button"
-    disabled={!url || url.length > 1273}
+    disabled={!url || url.length > QR_MAX_LENGTH}
     onclick={onUrlSubmit}
   >
     QR erzeugen
