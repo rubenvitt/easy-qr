@@ -72,7 +72,11 @@
       if (!ctx) return;
       ctx.fillStyle = inverted ? '#000' : '#fff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (inverted) {
+        ctx.filter = 'invert(1)';
+      }
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.filter = 'none';
       canvas.toBlob((png) => {
         if (!png) return;
         const a = document.createElement('a');
