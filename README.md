@@ -1,42 +1,34 @@
-# sv
+# QR-Generator
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Offline-fähige PWA für schnelle QR-Code-Erzeugung im Katastrophenschutz-Einsatz.
 
-## Creating a project
+## Setup
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
+```bash
+pnpm install
+pnpm dev
 ```
 
-To recreate this project with the same configuration:
+## Skripte
 
-```sh
-# recreate this project
-npx sv@0.15.3 create --template minimal --types ts --no-install .
-```
+| Script           | Beschreibung                                        |
+| ---------------- | --------------------------------------------------- |
+| `pnpm dev`       | Entwicklungsserver                                  |
+| `pnpm build`     | Produktions-Build (validiert vorher `presets.json`) |
+| `pnpm preview`   | Vorschau des Builds                                 |
+| `pnpm test`      | Unit-Tests (Vitest)                                 |
+| `pnpm test:e2e`  | E2E-Tests (Playwright)                              |
+| `pnpm lint`      | ESLint + Prettier-Check                             |
+| `pnpm typecheck` | svelte-check + tsc --noEmit                         |
 
-## Developing
+## Presets anpassen
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+`src/data/presets.json` editieren — wird beim Build validiert.
 
-```sh
-npm run dev
+## Deployment
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+Static Build (`build/`) auf Cloudflare Pages. Output-Dir: `build`.
 
-## Building
+## Manuelle Tests
 
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Siehe `docs/manual-test.md`.
