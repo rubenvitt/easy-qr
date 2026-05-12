@@ -10,6 +10,9 @@ test('history fills with last entries and links to QR', async ({ page }) => {
   await expect(page).toHaveURL(/\/qr\?/);
   await page.goBack();
   await expect(page.getByRole('heading', { name: /Verlauf/i })).toBeVisible();
-  await page.getByRole('button', { name: /Helfer-Anmeldung/i }).first().click();
+  await page
+    .getByRole('button', { name: /Helfer-Anmeldung/i })
+    .first()
+    .click();
   await expect(page).toHaveURL(/\/qr\?/);
 });
