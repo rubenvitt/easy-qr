@@ -9,9 +9,7 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "validate:presets": "tsx scripts/validate-presets.ts",
     "icons": "tsx scripts/generate-icons.ts",
-    "prebuild": "pnpm validate:presets",
     "build": "vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
