@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ url, request, platform }) => {
     return errorPage('Token-Tausch fehlgeschlagen', 400);
   }
 
-  let userInfo: Record<string, unknown> = {};
+  let userInfo: Record<string, unknown>;
   try {
     userInfo = await fetchUserInfo(discovery, tokens.accessToken());
   } catch {
