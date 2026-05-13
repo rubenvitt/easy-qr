@@ -19,8 +19,9 @@ test('anonymous can generate QR; admin can manage presets', async ({ page }) => 
   await page.goto('/auth/login?return=/admin');
   await expect(page).toHaveURL(/\/admin/);
   await page.getByRole('button', { name: '+ Neues Preset' }).click();
-  await page.getByLabel('Bezeichnung').fill('E2E Link');
+  const label = `E2E Link ${Date.now()}`;
+  await page.getByLabel('Bezeichnung').fill(label);
   await page.getByRole('textbox', { name: 'URL' }).fill('https://e2e.test');
   await page.getByRole('button', { name: 'Anlegen' }).click();
-  await expect(page.getByText('E2E Link')).toBeVisible();
+  await expect(page.getByText(label)).toBeVisible();
 });
