@@ -120,14 +120,18 @@
 </script>
 
 <div class="screen" class:css-fullscreen={cssFullscreen}>
+  <a class="button ghost back" href="/">← Zurück</a>
+
   {#if label}
     <h1>{label}</h1>
   {/if}
 
   <div
+    class="qr-card"
     bind:this={qrEl}
     role="button"
     tabindex="0"
+    aria-label="QR-Code — Tippen für Vollbild, lang drücken zum Invertieren"
     onclick={toggleFullscreen}
     onpointerdown={onPressStart}
     onpointerup={onPressEnd}
@@ -142,53 +146,84 @@
     <QrDisplay text={data} {inverted} />
   </div>
 
+  <p class="hint">
+    <strong>Helligkeit auf Maximum.</strong> Tippen für Vollbild, lang drücken zum Invertieren.
+  </p>
+
   {#if showRawData}
     <p class="data">{data}</p>
   {/if}
-  <p class="hint">Helligkeit auf Maximum für besseres Scannen.</p>
 
   <div class="actions">
-    <button type="button" class="secondary" onclick={toggleFullscreen}>⛶ Vollbild</button>
+    <button type="button" class="secondary" onclick={toggleFullscreen}>
+      <span aria-hidden="true">⛶</span> Vollbild
+    </button>
     {#if canShare}
-      <button type="button" class="secondary" onclick={share}>↗ Teilen</button>
+      <button type="button" class="secondary" onclick={share}>
+        <span aria-hidden="true">↗</span> Teilen
+      </button>
     {/if}
-    <button type="button" class="secondary" onclick={downloadPng}>⬇ PNG</button>
-    <a class="button secondary" href="/">← Zurück</a>
+    <button type="button" class="secondary" onclick={downloadPng}>
+      <span aria-hidden="true">⬇</span> PNG
+    </button>
   </div>
 </div>
 
 <style>
   .screen {
     display: grid;
-    gap: 1rem;
+    gap: var(--space-3);
+  }
+  .back {
+    justify-self: start;
+    margin-bottom: var(--space-1);
   }
   h1 {
-    font-size: 1.5rem;
+    font-size: var(--text-xl);
     text-align: center;
     margin: 0;
+    font-weight: 800;
+    word-break: break-word;
+  }
+  .qr-card {
+    cursor: pointer;
+    border-radius: var(--radius);
+  }
+  .qr-card:focus-visible {
+    outline-offset: 4px;
   }
   .data {
     font-family: ui-monospace, monospace;
+    font-size: var(--text-sm);
     word-break: break-all;
     text-align: center;
-    color: var(--muted);
+    color: var(--ink-muted);
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
   }
   .hint {
     text-align: center;
-    color: var(--muted);
-    font-size: 0.9rem;
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+    margin: 0;
   }
   .actions {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-2);
+    margin-top: var(--space-2);
   }
   .css-fullscreen {
     position: fixed;
     inset: 0;
-    background: #fff;
+    background: var(--paper);
     z-index: 9999;
-    padding: 1rem;
+    padding: var(--space-3);
     overflow: auto;
+    display: grid;
+    place-items: center;
+    grid-template-rows: auto auto 1fr auto auto;
   }
 </style>

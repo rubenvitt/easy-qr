@@ -34,60 +34,88 @@
   }
 </script>
 
-<a class="button secondary back" href="/">← Zurück</a>
-<h1>WLAN</h1>
+<a class="button ghost back" href="/">← Zurück</a>
+<h1>WLAN-Zugang</h1>
+<p class="lede">QR-Code zum Beitreten eines Funknetzes. Geräte verbinden sich mit einem Scan.</p>
 
-<form onsubmit={submit}>
-  <label>
-    SSID
-    <input type="text" bind:value={ssid} required autocomplete="off" />
-  </label>
+<form onsubmit={submit} class="form">
+  <div class="field">
+    <label for="wifi-ssid">SSID (Netzwerkname)</label>
+    <input id="wifi-ssid" type="text" bind:value={ssid} required autocomplete="off" />
+  </div>
 
-  <label>
-    Passwort
-    <input type="text" bind:value={password} autocomplete="off" />
-  </label>
+  <div class="field">
+    <label for="wifi-pass">Passwort</label>
+    <input id="wifi-pass" type="text" bind:value={password} autocomplete="off" />
+    <p class="hint">Leer lassen, wenn das Netz offen ist.</p>
+  </div>
 
   <fieldset>
     <legend>Verschlüsselung</legend>
-    <label><input type="radio" bind:group={encryption} value="WPA" /> WPA / WPA2</label>
-    <label><input type="radio" bind:group={encryption} value="WEP" /> WEP</label>
-    <label><input type="radio" bind:group={encryption} value="nopass" /> Keine</label>
+    <div class="radios">
+      <label class="check"
+        ><input type="radio" bind:group={encryption} value="WPA" /> WPA / WPA2</label
+      >
+      <label class="check"><input type="radio" bind:group={encryption} value="WEP" /> WEP</label>
+      <label class="check"
+        ><input type="radio" bind:group={encryption} value="nopass" /> Keine</label
+      >
+    </div>
   </fieldset>
 
-  <label class="checkbox">
-    <input type="checkbox" bind:checked={hidden} /> Verstecktes Netzwerk
+  <label class="check standalone">
+    <input type="checkbox" bind:checked={hidden} />
+    <span>Verstecktes Netzwerk</span>
   </label>
 
-  <button type="submit" disabled={!canSubmit}>QR erzeugen</button>
+  <button type="submit" class="primary submit" disabled={!canSubmit}>QR erzeugen</button>
 </form>
 
 <style>
+  .back {
+    margin-bottom: var(--space-3);
+  }
   h1 {
-    font-size: 1.3rem;
+    margin-bottom: var(--space-1);
   }
-  form {
+  .lede {
+    color: var(--ink-muted);
+    margin-bottom: var(--space-4);
+  }
+  .form {
     display: grid;
-    gap: 1rem;
+    gap: var(--space-4);
   }
-  label {
+  .field {
     display: grid;
-    gap: 0.25rem;
+    gap: var(--space-1);
   }
-  fieldset {
-    border: 2px solid var(--fg);
-    border-radius: 8px;
+  .hint {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  .radios {
     display: grid;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
-  .checkbox {
-    flex-direction: row;
+  .check {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: var(--text-base);
+    margin: 0;
+    min-height: 32px;
   }
-  .back {
-    display: inline-flex;
-    margin-bottom: 1rem;
+  .check.standalone {
+    padding: var(--space-2) 0;
+  }
+  .submit {
+    min-height: var(--tap-xl);
+    margin-top: var(--space-2);
   }
 </style>

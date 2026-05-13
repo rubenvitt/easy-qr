@@ -42,22 +42,31 @@
   .qr {
     display: grid;
     place-items: center;
-    background: #fff;
-    padding: 1rem;
-    border-radius: 8px;
+    background: #ffffff;
+    padding: var(--space-4);
+    border: var(--border-thick) solid #000000;
+    border-radius: var(--radius);
   }
   .qr.inverted {
-    background: #000;
+    background: #000000;
+    border-color: #ffffff;
     filter: invert(1);
   }
   .qr :global(svg) {
     width: 100%;
     height: auto;
     max-width: 100%;
+    display: block;
   }
   .placeholder {
-    color: var(--muted);
+    color: var(--ink-muted);
     text-align: center;
-    padding: 2rem;
+    padding: var(--space-5) var(--space-3);
+    border: var(--border-med) dashed var(--ink);
+    border-radius: var(--radius);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--text-sm);
   }
 </style>

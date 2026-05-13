@@ -26,28 +26,52 @@
   }
 </script>
 
-<a class="button secondary back" href="/">← Zurück</a>
-<h1>Telefon</h1>
+<a class="button ghost back" href="/">← Zurück</a>
+<h1>Telefonnummer</h1>
+<p class="lede">Beim Scannen öffnet sich der Wählvorgang im Telefon.</p>
 
-<form onsubmit={submit}>
-  <label>
-    Nummer
-    <input type="tel" bind:value={number} placeholder="+4915112345678" required />
-  </label>
-  <button type="submit" disabled={!number}>QR erzeugen</button>
+<form onsubmit={submit} class="form">
+  <div class="field">
+    <label for="tel-number">Nummer</label>
+    <input
+      id="tel-number"
+      type="tel"
+      bind:value={number}
+      placeholder="+49 151 12345678"
+      required
+    />
+    <p class="hint">Internationales Format mit Ländervorwahl empfohlen (z. B. +49…).</p>
+  </div>
+
+  <button type="submit" class="primary submit" disabled={!number}>QR erzeugen</button>
 </form>
 
 <style>
-  form {
-    display: grid;
-    gap: 1rem;
-  }
-  label {
-    display: grid;
-    gap: 0.25rem;
-  }
   .back {
-    display: inline-flex;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-3);
+  }
+  h1 {
+    margin-bottom: var(--space-1);
+  }
+  .lede {
+    color: var(--ink-muted);
+    margin-bottom: var(--space-4);
+  }
+  .form {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .field {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .hint {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+  .submit {
+    min-height: var(--tap-xl);
+    margin-top: var(--space-2);
   }
 </style>
