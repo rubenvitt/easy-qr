@@ -11,7 +11,32 @@ export default defineConfig({
       manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
-        navigateFallback: '/'
+        navigateFallback: '/',
+        navigateFallbackDenylist: [/^\/api\//, /^\/auth\//],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname === '/api/presets',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-presets',
+              networkTimeoutSeconds: 2,
+              expiration: { maxEntries: 1, maxAgeSeconds: 60 * 60 * 24 },
+              cacheableResponse: { statuses: [200] }
+            }
+          },
+          {
+            urlPattern: ({ url }) => url.pathname === '/api/me',
+            handler: 'NetworkOnly'
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/auth/'),
+            handler: 'NetworkOnly'
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/presets/'),
+            handler: 'NetworkOnly'
+          }
+        ]
       }
     })
   ]
