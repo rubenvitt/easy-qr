@@ -6,28 +6,35 @@
   import UrlInput from '$lib/components/UrlInput.svelte';
   import HistoryList from '$lib/components/HistoryList.svelte';
   import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
-  import { allPresets } from '$lib/presets';
   import { payloadToQrString } from '$lib/payload';
   import { QR_MAX_LENGTH } from '$lib/qr';
   import { loadHistory, addEntry } from '$lib/history';
   import { randomId } from '$lib/uuid';
+  import { auth } from '$lib/stores/auth';
   import type { Preset, HistoryEntry, QrPayload } from '$lib/types';
 
-  let presets = allPresets();
+  let presets = $state<Preset[]>([]);
+  let presetsLoaded = $state(false);
   let url = $state('');
   let history = $state<HistoryEntry[]>([]);
 
-  onMount(() => {
+  onMount(async () => {
     history = loadHistory();
+    try {
+      const res = await fetch('/api/presets', { credentials: 'same-origin' });
+      if (res.ok) {
+        const body = (await res.json()) as { presets: Preset[] };
+        presets = body.presets;
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      presetsLoaded = true;
+    }
   });
 
   function recordAndNavigate(label: string, payload: QrPayload) {
-    const entry: HistoryEntry = {
-      id: randomId(),
-      label,
-      payload,
-      createdAt: Date.now()
-    };
+    const entry: HistoryEntry = { id: randomId(), label, payload, createdAt: Date.now() };
     addEntry(entry);
     history = loadHistory();
     const params = new URLSearchParams({
@@ -41,12 +48,9 @@
   function onPreset(p: Preset) {
     recordAndNavigate(p.label, p);
   }
-
   function onUrlSubmit() {
-    if (!url) return;
-    recordAndNavigate(url, { kind: 'url', value: url });
+    if (url) recordAndNavigate(url, { kind: 'url', value: url });
   }
-
   function onHistorySelect(e: HistoryEntry) {
     const params = new URLSearchParams({
       data: payloadToQrString(e.payload),
@@ -62,9 +66,17 @@
   <OfflineIndicator />
 </header>
 
-<section aria-label="Presets">
-  <PresetGrid {presets} onSelect={onPreset} />
-</section>
+{#if presetsLoaded && presets.length > 0}
+  <section aria-label="Presets">
+    <PresetGrid {presets} onSelect={onPreset} />
+  </section>
+{:else if !presetsLoaded}
+  <section aria-label="Presets"><p>Lade Presets…</p></section>
+{:else if !$auth}
+  <section aria-label="Hinweis" class="hint">
+    <p>Tipp: <a href="/auth/login?return=/">Melde dich an</a>, um Schnellzugriffe zu sehen.</p>
+  </section>
+{/if}
 
 <section aria-label="URL eingeben">
   <UrlInput value={url} onChange={(v) => (url = v)} />
