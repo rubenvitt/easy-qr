@@ -16,17 +16,17 @@ Die anonyme QR-Generierung funktioniert auch ohne Pocket-ID-Login.
 
 ## Skripte
 
-| Script                  | Beschreibung                                   |
-| ----------------------- | ---------------------------------------------- |
-| `pnpm dev`              | Entwicklungsserver (Vite + lokales D1)         |
-| `pnpm build`            | Produktions-Build (`adapter-cloudflare`)       |
-| `pnpm preview`          | Vorschau des Builds                            |
-| `pnpm test`             | Unit-Tests (Vitest, Node)                      |
-| `pnpm test:integration` | Integrationstests (Vitest Workers Pool + D1)   |
-| `pnpm test:all`         | Unit- + Integrationstests nacheinander         |
-| `pnpm test:e2e`         | E2E-Tests (Playwright)                         |
-| `pnpm lint`             | ESLint + Prettier-Check                        |
-| `pnpm typecheck`        | svelte-check + tsc --noEmit                    |
+| Script                  | Beschreibung                                 |
+| ----------------------- | -------------------------------------------- |
+| `pnpm dev`              | Entwicklungsserver (Vite + lokales D1)       |
+| `pnpm build`            | Produktions-Build (`adapter-cloudflare`)     |
+| `pnpm preview`          | Vorschau des Builds                          |
+| `pnpm test`             | Unit-Tests (Vitest, Node)                    |
+| `pnpm test:integration` | Integrationstests (Vitest Workers Pool + D1) |
+| `pnpm test:all`         | Unit- + Integrationstests nacheinander       |
+| `pnpm test:e2e`         | E2E-Tests (Playwright)                       |
+| `pnpm lint`             | ESLint + Prettier-Check                      |
+| `pnpm typecheck`        | svelte-check + tsc --noEmit                  |
 
 ## Presets verwalten
 

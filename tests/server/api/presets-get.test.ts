@@ -13,9 +13,7 @@ beforeAll(async () => {
   await applyD1Migrations(testEnv.DB, testEnv.TEST_MIGRATIONS);
 });
 
-function callGet(opts: {
-  user: { id: string; role: 'user' | 'admin' } | null;
-}): Promise<Response> {
+function callGet(opts: { user: { id: string; role: 'user' | 'admin' } | null }): Promise<Response> {
   const platform = { env: { DB: testEnv.DB } } as unknown as App.Platform;
   return Promise.resolve(
     (

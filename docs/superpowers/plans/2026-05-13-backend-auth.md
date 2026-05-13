@@ -53,6 +53,7 @@
 ## Task 1: Adapter-Wechsel und Wrangler-Bootstrap
 
 **Files:**
+
 - Modify: `package.json`, `svelte.config.js`, `.gitignore`, `src/app.d.ts`, `src/routes/+layout.ts`
 - Create: `wrangler.toml`, `.dev.vars.example`
 
@@ -113,6 +114,7 @@ APP_ORIGIN=http://localhost:5173
 - [ ] **Step 5: `.gitignore` ergänzen**
 
 Anhängen:
+
 ```
 .dev.vars
 .wrangler/
@@ -183,11 +185,13 @@ git commit -m "chore(adapter): switch to adapter-cloudflare with D1 binding"
 ## Task 2: D1-Schema und Migrationen
 
 **Files:**
+
 - Create: `migrations/0001_init.sql`, `migrations/0002_seed_demo_preset.sql`
 
 - [ ] **Step 1: Schema**
 
 `migrations/0001_init.sql`:
+
 ```sql
 CREATE TABLE presets (
   id TEXT PRIMARY KEY,
@@ -225,6 +229,7 @@ CREATE INDEX idx_sessions_expires ON sessions (expires_at);
 - [ ] **Step 2: Demo-Seed (keine Echt-Daten)**
 
 `migrations/0002_seed_demo_preset.sql`:
+
 ```sql
 INSERT INTO presets (id, label, icon, kind, value, sort_order, created_at, updated_at, created_by, updated_by)
 VALUES (
@@ -248,6 +253,7 @@ pnpm wrangler d1 create drk-qr-presets || true
 # database_id aus der Ausgabe in wrangler.toml übernehmen
 pnpm wrangler d1 migrations apply drk-qr-presets --local
 ```
+
 Expected: `✔ Successfully applied 2 migrations`.
 
 - [ ] **Step 4: Commit**
@@ -262,6 +268,7 @@ git commit -m "feat(db): add D1 schema and demo seed migration"
 ## Task 3: Crypto-Helper (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/crypto.ts`
 - Create: `tests/server/auth/crypto.test.ts`
 
@@ -269,7 +276,13 @@ git commit -m "feat(db): add D1 schema and demo seed migration"
 
 ```ts
 import { describe, it, expect } from 'vitest';
-import { hmacSign, hmacVerify, toBase64Url, fromBase64Url, randomHex } from '../../../src/lib/server/crypto';
+import {
+  hmacSign,
+  hmacVerify,
+  toBase64Url,
+  fromBase64Url,
+  randomHex
+} from '../../../src/lib/server/crypto';
 
 describe('crypto', () => {
   it('signs and verifies', async () => {
@@ -305,6 +318,7 @@ Run: `pnpm test tests/server/auth/crypto.test.ts` → Modul fehlt.
 - [ ] **Step 3: Implementierung**
 
 `src/lib/server/crypto.ts`:
+
 ```ts
 const encoder = new TextEncoder();
 
@@ -338,10 +352,19 @@ export async function hmacSign(payload: string, secret: string): Promise<string>
   return toBase64Url(sig);
 }
 
-export async function hmacVerify(payload: string, signature: string, secret: string): Promise<boolean> {
+export async function hmacVerify(
+  payload: string,
+  signature: string,
+  secret: string
+): Promise<boolean> {
   const key = await importKey(secret);
   try {
-    return await crypto.subtle.verify('HMAC', key, fromBase64Url(signature), encoder.encode(payload));
+    return await crypto.subtle.verify(
+      'HMAC',
+      key,
+      fromBase64Url(signature),
+      encoder.encode(payload)
+    );
   } catch {
     return false;
   }
@@ -367,6 +390,7 @@ git commit -m "feat(server): add HMAC + base64url crypto helpers"
 ## Task 4: Cookie-Helper (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/auth/cookies.ts`
 - Create: `tests/server/auth/cookies.test.ts`
 
@@ -437,6 +461,7 @@ describe('readCookie', () => {
 - [ ] **Step 3: Implementierung**
 
 `src/lib/server/auth/cookies.ts`:
+
 ```ts
 import { hmacSign, hmacVerify } from '../crypto';
 
@@ -520,6 +545,7 @@ git commit -m "feat(auth): signed cookie + transient cookie helpers"
 ## Task 5: Fake-D1-Helper für Unit-Tests
 
 **Files:**
+
 - Create: `tests/helpers/fake-d1.ts`
 - Modify: `package.json` (better-sqlite3 als dev-dep)
 
@@ -532,6 +558,7 @@ pnpm add -D better-sqlite3 @types/better-sqlite3
 - [ ] **Step 2: Fake-D1 anlegen**
 
 `tests/helpers/fake-d1.ts`:
+
 ```ts
 import Database from 'better-sqlite3';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -594,6 +621,7 @@ export function createFakeD1(): { db: D1Database; raw: Database.Database } {
 - [ ] **Step 3: Smoke-Test**
 
 Schreibe schnellen Test `tests/helpers/fake-d1.smoke.test.ts`:
+
 ```ts
 import { describe, it, expect } from 'vitest';
 import { createFakeD1 } from './fake-d1';
@@ -601,7 +629,10 @@ import { createFakeD1 } from './fake-d1';
 describe('fake-d1', () => {
   it('runs migrations and seeds demo-url', async () => {
     const { db } = createFakeD1();
-    const row = await db.prepare(`SELECT id FROM presets WHERE id = ?`).bind('demo-url').first<{ id: string }>();
+    const row = await db
+      .prepare(`SELECT id FROM presets WHERE id = ?`)
+      .bind('demo-url')
+      .first<{ id: string }>();
     expect(row?.id).toBe('demo-url');
   });
 });
@@ -621,6 +652,7 @@ git commit -m "test: in-memory D1 fake for unit tests"
 ## Task 6: Session-Repository (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/auth/sessions.ts`
 - Create: `tests/server/auth/sessions.test.ts`
 
@@ -687,6 +719,7 @@ describe('sessions', () => {
 - [ ] **Step 3: Implementierung**
 
 `src/lib/server/auth/sessions.ts`:
+
 ```ts
 import { randomHex } from '../crypto';
 
@@ -766,6 +799,7 @@ git commit -m "feat(auth): session repository with TTL handling"
 ## Task 7: Role-Mapping (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/auth/role-mapping.ts`
 - Create: `tests/server/auth/role-mapping.test.ts`
 
@@ -797,6 +831,7 @@ describe('mapRoleFromGroups', () => {
 - [ ] **Step 2: Implementierung**
 
 `src/lib/server/auth/role-mapping.ts`:
+
 ```ts
 export class NoRoleError extends Error {
   constructor() {
@@ -828,6 +863,7 @@ git commit -m "feat(auth): map Pocket ID groups to user/admin roles"
 ## Task 8: Return-URL-Allowlist (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/auth/return-url.ts`
 - Create: `tests/server/auth/return-url.test.ts`
 
@@ -851,6 +887,7 @@ describe('sanitizeReturnUrl', () => {
 - [ ] **Step 2: Implementierung**
 
 `src/lib/server/auth/return-url.ts`:
+
 ```ts
 export function sanitizeReturnUrl(raw: string | null): string {
   if (!raw) return '/';
@@ -874,6 +911,7 @@ git commit -m "feat(auth): sanitizeReturnUrl allowlist helper"
 ## Task 9: User-Upsert (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/auth/users.ts`
 - Create: `tests/server/auth/users.test.ts`
 
@@ -898,7 +936,10 @@ describe('upsertUser', () => {
 
   it('updates fields + last_login on second login', async () => {
     await upsertUser(db, { sub: 'sub-1', email: 'a@b.de', name: 'A', role: 'user' });
-    const first = await db.prepare(`SELECT last_login_at FROM users WHERE id = ?`).bind('sub-1').first<any>();
+    const first = await db
+      .prepare(`SELECT last_login_at FROM users WHERE id = ?`)
+      .bind('sub-1')
+      .first<any>();
     await new Promise((r) => setTimeout(r, 5));
     await upsertUser(db, { sub: 'sub-1', email: 'c@d.de', name: 'C', role: 'admin' });
     const row = await db.prepare(`SELECT * FROM users WHERE id = ?`).bind('sub-1').first<any>();
@@ -912,6 +953,7 @@ describe('upsertUser', () => {
 - [ ] **Step 2: Implementierung**
 
 `src/lib/server/auth/users.ts`:
+
 ```ts
 import type { Role } from './role-mapping';
 
@@ -952,6 +994,7 @@ git commit -m "feat(auth): upsert user record on every login"
 ## Task 10: OIDC-Client + Discovery-Cache
 
 **Files:**
+
 - Create: `src/lib/server/auth/oidc.ts`
 - Create: `tests/server/auth/oidc.test.ts`
 
@@ -971,15 +1014,16 @@ beforeEach(() => __resetDiscoveryCache());
 
 describe('fetchDiscovery', () => {
   it('caches per issuer', async () => {
-    const spy = vi.fn(async () =>
-      new Response(
-        JSON.stringify({
-          authorization_endpoint: 'https://id.example/auth',
-          token_endpoint: 'https://id.example/token',
-          userinfo_endpoint: 'https://id.example/userinfo'
-        }),
-        { status: 200, headers: { 'content-type': 'application/json' } }
-      )
+    const spy = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            authorization_endpoint: 'https://id.example/auth',
+            token_endpoint: 'https://id.example/token',
+            userinfo_endpoint: 'https://id.example/userinfo'
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } }
+        )
     );
     const a = await fetchDiscovery('https://id.example', spy as any);
     const b = await fetchDiscovery('https://id.example', spy as any);
@@ -997,6 +1041,7 @@ describe('fetchDiscovery', () => {
 - [ ] **Step 3: Implementierung**
 
 `src/lib/server/auth/oidc.ts`:
+
 ```ts
 import {
   OAuth2Client,
@@ -1023,7 +1068,10 @@ export function __resetDiscoveryCache() {
 
 type FetchFn = typeof fetch;
 
-export async function fetchDiscovery(issuer: string, fetchFn: FetchFn = fetch): Promise<OidcDiscovery> {
+export async function fetchDiscovery(
+  issuer: string,
+  fetchFn: FetchFn = fetch
+): Promise<OidcDiscovery> {
   const cached = cache.get(issuer);
   if (cached) return cached;
   const pending = inflight.get(issuer);
@@ -1082,6 +1130,7 @@ git commit -m "feat(auth): arctic OIDC client + discovery cache"
 ## Task 11: DB-Helper + `hooks.server.ts`
 
 **Files:**
+
 - Create: `src/lib/server/db.ts`, `src/hooks.server.ts`
 
 - [ ] **Step 1: `src/lib/server/db.ts`**
@@ -1153,6 +1202,7 @@ git commit -m "feat(server): load user from signed session cookie in hooks"
 ## Task 12: `/auth/login` Route
 
 **Files:**
+
 - Create: `src/routes/auth/login/+server.ts`
 
 - [ ] **Step 1: Endpoint**
@@ -1219,6 +1269,7 @@ git commit -m "feat(auth): start OIDC PKCE flow in /auth/login"
 ## Task 13: `/auth/callback` Route
 
 **Files:**
+
 - Create: `src/routes/auth/callback/+server.ts`
 
 - [ ] **Step 1: Endpoint**
@@ -1250,7 +1301,8 @@ export const prerender = false;
 export const GET: RequestHandler = async ({ url, request, platform }) => {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
-  if (url.searchParams.get('error')) return errorPage(`OIDC-Fehler: ${url.searchParams.get('error')}`, 400);
+  if (url.searchParams.get('error'))
+    return errorPage(`OIDC-Fehler: ${url.searchParams.get('error')}`, 400);
   if (!code || !state) return errorPage('Fehlende Parameter', 400);
 
   const cookieHeader = request.headers.get('cookie');
@@ -1320,7 +1372,10 @@ export const GET: RequestHandler = async ({ url, request, platform }) => {
 };
 
 function errorPage(msg: string, status: number): Response {
-  const safe = msg.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]!);
+  const safe = msg.replace(
+    /[<>&"]/g,
+    (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c]!
+  );
   return new Response(
     `<!doctype html><meta charset="utf-8"><title>Login fehlgeschlagen</title>` +
       `<main style="font:16px system-ui;padding:2rem;max-width:32rem;margin:auto">` +
@@ -1344,6 +1399,7 @@ git commit -m "feat(auth): OIDC callback handler, create session"
 ## Task 14: `/auth/logout` Route
 
 **Files:**
+
 - Create: `src/routes/auth/logout/+server.ts`
 
 - [ ] **Step 1: Endpoint**
@@ -1384,6 +1440,7 @@ git commit -m "feat(auth): /auth/logout deletes session + clears cookie"
 ## Task 15: `/api/me` + `+layout.server.ts`
 
 **Files:**
+
 - Create: `src/routes/api/me/+server.ts`, `src/routes/+layout.server.ts`
 
 - [ ] **Step 1: `/api/me`**
@@ -1420,6 +1477,7 @@ git commit -m "feat(auth): expose current user via /api/me and layout load"
 ## Task 16: Slug-Helper (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/presets/slug.ts`, `tests/server/presets/slug.test.ts`
 
 - [ ] **Step 1: Tests**
@@ -1475,6 +1533,7 @@ describe('uniqueSlug', () => {
 - [ ] **Step 2: Implementierung**
 
 `src/lib/server/presets/slug.ts`:
+
 ```ts
 const UMLAUT_MAP: Record<string, string> = { ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss' };
 
@@ -1494,7 +1553,10 @@ export async function uniqueSlug(db: D1Database, base: string): Promise<string> 
   let candidate = base;
   let suffix = 2;
   while (true) {
-    const row = await db.prepare(`SELECT 1 AS one FROM presets WHERE id = ?`).bind(candidate).first<{ one: number }>();
+    const row = await db
+      .prepare(`SELECT 1 AS one FROM presets WHERE id = ?`)
+      .bind(candidate)
+      .first<{ one: number }>();
     if (!row) return candidate;
     candidate = `${base}-${suffix++}`;
     if (suffix > 1000) throw new Error('uniqueSlug: exhausted suffix space');
@@ -1515,6 +1577,7 @@ git commit -m "feat(presets): slugify + uniqueSlug helpers"
 ## Task 17: Server-seitiger Preset-Validator (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/presets/validator.ts`, `tests/server/presets/validator.test.ts`
 
 - [ ] **Step 1: Tests**
@@ -1537,9 +1600,9 @@ describe('validatePresetInput', () => {
     expect(validatePresetInput({ label: 'X', kind: 'pikachu', value: 'x' }).ok).toBe(false);
   });
   it('rejects wifi without ssid', () => {
-    expect(
-      validatePresetInput({ label: 'X', kind: 'wifi', value: { encryption: 'WPA' } }).ok
-    ).toBe(false);
+    expect(validatePresetInput({ label: 'X', kind: 'wifi', value: { encryption: 'WPA' } }).ok).toBe(
+      false
+    );
   });
   it('accepts wifi with ssid', () => {
     expect(
@@ -1551,13 +1614,19 @@ describe('validatePresetInput', () => {
     ).toBe(true);
   });
   it('rejects vcard without name', () => {
-    expect(validatePresetInput({ label: 'X', kind: 'vcard', value: { tel: '+49' } }).ok).toBe(false);
+    expect(validatePresetInput({ label: 'X', kind: 'vcard', value: { tel: '+49' } }).ok).toBe(
+      false
+    );
   });
   it('rejects malformed slug id', () => {
-    expect(validatePresetInput({ id: 'Foo Bar', label: 'X', kind: 'text', value: 'hi' }).ok).toBe(false);
+    expect(validatePresetInput({ id: 'Foo Bar', label: 'X', kind: 'text', value: 'hi' }).ok).toBe(
+      false
+    );
   });
   it('accepts slug id', () => {
-    expect(validatePresetInput({ id: 'foo-bar', label: 'X', kind: 'text', value: 'hi' }).ok).toBe(true);
+    expect(validatePresetInput({ id: 'foo-bar', label: 'X', kind: 'text', value: 'hi' }).ok).toBe(
+      true
+    );
   });
   it('rejects unknown wifi encryption', () => {
     expect(
@@ -1574,6 +1643,7 @@ describe('validatePresetInput', () => {
 - [ ] **Step 2: Implementierung**
 
 `src/lib/server/presets/validator.ts`:
+
 ```ts
 import type { Preset, QrKind } from '$lib/types';
 
@@ -1621,7 +1691,8 @@ export function validatePresetInput(input: unknown): ValidationResult {
       const c = v as Record<string, unknown>;
       if (typeof c.name !== 'string' || c.name === '') return fail('vcard.name fehlt');
       for (const k of ['tel', 'email', 'org']) {
-        if (c[k] !== undefined && typeof c[k] !== 'string') return fail(`vcard.${k} muss string sein`);
+        if (c[k] !== undefined && typeof c[k] !== 'string')
+          return fail(`vcard.${k} muss string sein`);
       }
       break;
     }
@@ -1657,6 +1728,7 @@ git commit -m "feat(presets): server-side preset validation"
 ## Task 18: Preset-Repository
 
 **Files:**
+
 - Create: `src/lib/server/presets/repo.ts`
 
 - [ ] **Step 1: Implementierung**
@@ -1685,7 +1757,9 @@ function rowToPreset(r: Row): Preset {
 
 export async function listPresets(db: D1Database): Promise<Preset[]> {
   const res = await db
-    .prepare(`SELECT id, label, icon, kind, value, sort_order FROM presets ORDER BY sort_order, label`)
+    .prepare(
+      `SELECT id, label, icon, kind, value, sort_order FROM presets ORDER BY sort_order, label`
+    )
     .all<Row>();
   return res.results.map(rowToPreset);
 }
@@ -1774,6 +1848,7 @@ git commit -m "feat(presets): D1 repository with CRUD + reorder"
 ## Task 19: Integration-Tests-Setup (Vitest Workers Pool)
 
 **Files:**
+
 - Create: `vitest.workers.config.ts`
 - Modify: `vitest.config.ts`, `package.json`
 
@@ -1814,10 +1889,11 @@ export default defineWorkersConfig({
 - [ ] **Step 3: `vitest.config.ts` — Integrationspfad ausschließen**
 
 Im bestehenden `test`-Block ergänzen:
+
 ```ts
 test: {
   // ...bestehende Optionen
-  exclude: ['node_modules/**', 'tests/server/api/**', 'tests/e2e/**']
+  exclude: ['node_modules/**', 'tests/server/api/**', 'tests/e2e/**'];
 }
 ```
 
@@ -1840,6 +1916,7 @@ git commit -m "test: add @cloudflare/vitest-pool-workers integration config"
 ## Task 20: API-Test-Helpers (`tests/server/api/_helpers.ts`)
 
 **Files:**
+
 - Create: `tests/server/api/_helpers.ts`
 
 - [ ] **Step 1: Helper**
@@ -1853,10 +1930,14 @@ export async function seedUserAndSession(role: 'user' | 'admin'): Promise<string
   const sid = crypto.randomUUID();
   await env.DB.prepare(
     `INSERT INTO users (id, email, display_name, role, created_at, last_login_at) VALUES (?, ?, ?, ?, ?, ?)`
-  ).bind(userId, `${userId}@x.de`, 'T', role, Date.now(), Date.now()).run();
+  )
+    .bind(userId, `${userId}@x.de`, 'T', role, Date.now(), Date.now())
+    .run();
   await env.DB.prepare(
     `INSERT INTO sessions (id, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)`
-  ).bind(sid, userId, Date.now() + 1e7, Date.now()).run();
+  )
+    .bind(sid, userId, Date.now() + 1e7, Date.now())
+    .run();
   return sid;
 }
 
@@ -1879,6 +1960,7 @@ git commit -m "test(api): helpers for seeding session + signing cookie"
 ## Task 21: `GET /api/presets` + Integration-Test
 
 **Files:**
+
 - Create: `src/routes/api/presets/+server.ts` (zunächst nur GET)
 - Create: `tests/server/api/presets-get.test.ts`
 
@@ -1904,7 +1986,9 @@ describe('GET /api/presets', () => {
     await env.DB.prepare(
       `INSERT INTO presets (id,label,kind,value,sort_order,created_at,updated_at,created_by,updated_by)
        VALUES (?,?,?,?,?,?,?,?,?)`
-    ).bind('p1', 'Eins', 'url', '"https://x"', 0, 0, 0, 'system', 'system').run();
+    )
+      .bind('p1', 'Eins', 'url', '"https://x"', 0, 0, 0, 'system', 'system')
+      .run();
     const res = await SELF.fetch('http://localhost/api/presets', {
       headers: { Cookie: await signCookie(sid) }
     });
@@ -1921,6 +2005,7 @@ describe('GET /api/presets', () => {
 - [ ] **Step 2: GET-Endpoint**
 
 `src/routes/api/presets/+server.ts`:
+
 ```ts
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { requireDb } from '$lib/server/db';
@@ -1948,6 +2033,7 @@ git commit -m "feat(api): GET /api/presets with auth check"
 ## Task 22: `POST /api/presets` (Admin) + Integration-Test
 
 **Files:**
+
 - Modify: `src/routes/api/presets/+server.ts`
 - Create: `tests/server/api/presets-post.test.ts`
 
@@ -2017,7 +2103,13 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
   const id = result.value.id ?? (await uniqueSlug(db, slugify(result.value.label)));
   await insertPreset(
     db,
-    { id, label: result.value.label, icon: result.value.icon, kind: result.value.kind, value: result.value.value },
+    {
+      id,
+      label: result.value.label,
+      icon: result.value.icon,
+      kind: result.value.kind,
+      value: result.value.value
+    },
     locals.user.id
   );
   const created = await getPreset(db, id);
@@ -2038,6 +2130,7 @@ git commit -m "feat(api): POST /api/presets with validation, slug, admin-only"
 ## Task 23: `PUT` + `DELETE /api/presets/[id]` + Test
 
 **Files:**
+
 - Create: `src/routes/api/presets/[id]/+server.ts`
 - Create: `tests/server/api/presets-update-delete.test.ts`
 
@@ -2052,7 +2145,9 @@ async function seedPreset(id = 'p1') {
   await env.DB.prepare(
     `INSERT INTO presets (id,label,kind,value,sort_order,created_at,updated_at,created_by,updated_by)
      VALUES (?,?,?,?,?,?,?,?,?)`
-  ).bind(id, id, 'text', '"hi"', 0, 0, 0, 'sys', 'sys').run();
+  )
+    .bind(id, id, 'text', '"hi"', 0, 0, 0, 'sys', 'sys')
+    .run();
 }
 
 describe('PUT/DELETE /api/presets/:id', () => {
@@ -2122,7 +2217,12 @@ export const PUT: RequestHandler = async ({ params, request, locals, platform })
   const ok = await updatePreset(
     db,
     params.id!,
-    { label: result.value.label, icon: result.value.icon, kind: result.value.kind, value: result.value.value },
+    {
+      label: result.value.label,
+      icon: result.value.icon,
+      kind: result.value.kind,
+      value: result.value.value
+    },
     locals.user.id
   );
   if (!ok) return new Response('Not Found', { status: 404 });
@@ -2151,6 +2251,7 @@ git commit -m "feat(api): PUT and DELETE /api/presets/:id"
 ## Task 24: `POST /api/presets/reorder` + Test
 
 **Files:**
+
 - Create: `src/routes/api/presets/reorder/+server.ts`
 - Create: `tests/server/api/presets-reorder.test.ts`
 
@@ -2167,7 +2268,9 @@ describe('POST /api/presets/reorder', () => {
       await env.DB.prepare(
         `INSERT INTO presets (id,label,kind,value,sort_order,created_at,updated_at,created_by,updated_by)
          VALUES (?,?,?,?,?,?,?,?,?)`
-      ).bind(id, id, 'text', '"x"', 0, 0, 0, 's', 's').run();
+      )
+        .bind(id, id, 'text', '"x"', 0, 0, 0, 's', 's')
+        .run();
     }
     const sid = await seedUserAndSession('admin');
     const res = await SELF.fetch('http://localhost/api/presets/reorder', {
@@ -2176,9 +2279,9 @@ describe('POST /api/presets/reorder', () => {
       body: JSON.stringify({ ids: ['c', 'a', 'b'] })
     });
     expect(res.status).toBe(204);
-    const list = await env.DB.prepare(
-      `SELECT id FROM presets ORDER BY sort_order, label`
-    ).all<{ id: string }>();
+    const list = await env.DB.prepare(`SELECT id FROM presets ORDER BY sort_order, label`).all<{
+      id: string;
+    }>();
     expect(list.results.map((r) => r.id)).toEqual(['c', 'a', 'b']);
   });
 
@@ -2228,12 +2331,14 @@ git commit -m "feat(api): POST /api/presets/reorder updates sort order"
 ## Task 25: Auth-Store + Header-UI
 
 **Files:**
+
 - Create: `src/lib/stores/auth.ts`
 - Modify: `src/routes/+layout.svelte`
 
 - [ ] **Step 1: Auth-Store**
 
 `src/lib/stores/auth.ts`:
+
 ```ts
 import { writable, type Readable } from 'svelte/store';
 
@@ -2281,7 +2386,9 @@ Lese aktuellen Inhalt; ersetze Skript-Teil und ergänze Topbar (Originalstruktur
 
   let { data, children }: { data: LayoutData; children: any } = $props();
   setAuthUser(data.user);
-  onMount(() => { refreshAuth(); });
+  onMount(() => {
+    refreshAuth();
+  });
 
   function loginHref(): string {
     const ret = encodeURIComponent($page.url.pathname + $page.url.search);
@@ -2306,11 +2413,31 @@ Lese aktuellen Inhalt; ersetze Skript-Teil und ergänze Topbar (Originalstruktur
 {@render children()}
 
 <style>
-  .topbar { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; border-bottom: 1px solid #eee; }
-  .brand { font-weight: 600; text-decoration: none; }
-  .spacer { flex: 1; }
-  .user { color: #555; font-size: 0.9rem; }
-  .link { background: none; border: none; padding: 0; color: #0366d6; cursor: pointer; }
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  .brand {
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .spacer {
+    flex: 1;
+  }
+  .user {
+    color: #555;
+    font-size: 0.9rem;
+  }
+  .link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #0366d6;
+    cursor: pointer;
+  }
 </style>
 ```
 
@@ -2332,6 +2459,7 @@ git commit -m "feat(client): auth store + topbar with login/logout/admin link"
 ## Task 26: `/` Hauptseite — Presets aus API laden
 
 **Files:**
+
 - Modify: `src/routes/+page.svelte`, `src/lib/presets.ts`
 
 - [ ] **Step 1: `src/lib/presets.ts` reduzieren**
@@ -2386,8 +2514,11 @@ export function validatePresetsFile(input: unknown): asserts input is PresetsFil
         const body = (await res.json()) as { presets: Preset[] };
         presets = body.presets;
       }
-    } catch { /* ignore */ }
-    finally { presetsLoaded = true; }
+    } catch {
+      /* ignore */
+    } finally {
+      presetsLoaded = true;
+    }
   });
 
   function recordAndNavigate(label: string, payload: QrPayload) {
@@ -2402,8 +2533,12 @@ export function validatePresetsFile(input: unknown): asserts input is PresetsFil
     goto(`/qr?${params.toString()}`);
   }
 
-  function onPreset(p: Preset) { recordAndNavigate(p.label, p); }
-  function onUrlSubmit() { if (url) recordAndNavigate(url, { kind: 'url', value: url }); }
+  function onPreset(p: Preset) {
+    recordAndNavigate(p.label, p);
+  }
+  function onUrlSubmit() {
+    if (url) recordAndNavigate(url, { kind: 'url', value: url });
+  }
   function onHistorySelect(e: HistoryEntry) {
     const params = new URLSearchParams({
       data: payloadToQrString(e.payload),
@@ -2444,11 +2579,13 @@ git commit -m "feat(client): fetch presets from /api/presets instead of build-ti
 ## Task 27: Admin-Route + Skeleton
 
 **Files:**
+
 - Create: `src/routes/admin/+page.server.ts`, `+page.ts`, `+page.svelte`
 
 - [ ] **Step 1: Guard**
 
 `src/routes/admin/+page.server.ts`:
+
 ```ts
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
@@ -2468,6 +2605,7 @@ export const load: PageServerLoad = ({ locals, url }) => {
 ```
 
 `src/routes/admin/+page.ts`:
+
 ```ts
 export const prerender = false;
 ```
@@ -2475,6 +2613,7 @@ export const prerender = false;
 - [ ] **Step 2: Seite**
 
 `src/routes/admin/+page.svelte`:
+
 ```svelte
 <script lang="ts">
   import { onMount } from 'svelte';
@@ -2488,7 +2627,10 @@ export const prerender = false;
 
   async function refresh() {
     const res = await fetch('/api/presets');
-    if (!res.ok) { error = `Laden fehlgeschlagen (${res.status})`; return; }
+    if (!res.ok) {
+      error = `Laden fehlgeschlagen (${res.status})`;
+      return;
+    }
     presets = ((await res.json()) as { presets: Preset[] }).presets;
   }
 
@@ -2558,6 +2700,7 @@ git commit -m "feat(admin): admin page skeleton with list + reorder + delete"
 ## Task 28: Admin-Preset-Form
 
 **Files:**
+
 - Create: `src/routes/admin/PresetForm.svelte`
 
 - [ ] **Step 1: Komponente**
@@ -2586,19 +2729,23 @@ git commit -m "feat(admin): admin page skeleton with list + reorder + delete"
   );
   let hidden = $state(preset?.kind === 'wifi' ? !!preset.value.hidden : false);
   let name = $state(preset?.kind === 'vcard' ? preset.value.name : '');
-  let tel = $state(preset?.kind === 'vcard' ? preset.value.tel ?? '' : '');
-  let email = $state(preset?.kind === 'vcard' ? preset.value.email ?? '' : '');
-  let org = $state(preset?.kind === 'vcard' ? preset.value.org ?? '' : '');
+  let tel = $state(preset?.kind === 'vcard' ? (preset.value.tel ?? '') : '');
+  let email = $state(preset?.kind === 'vcard' ? (preset.value.email ?? '') : '');
+  let org = $state(preset?.kind === 'vcard' ? (preset.value.org ?? '') : '');
 
   let busy = $state(false);
   let error = $state<string | null>(null);
 
   function buildValue(): unknown {
     switch (kind) {
-      case 'url': return urlValue;
-      case 'tel': return telValue;
-      case 'text': return textValue;
-      case 'wifi': return { ssid, password, encryption, hidden };
+      case 'url':
+        return urlValue;
+      case 'tel':
+        return telValue;
+      case 'text':
+        return textValue;
+      case 'wifi':
+        return { ssid, password, encryption, hidden };
       case 'vcard':
         return {
           name,
@@ -2633,7 +2780,8 @@ git commit -m "feat(admin): admin page skeleton with list + reorder + delete"
 <form onsubmit={submit} class="preset-form">
   <label>Bezeichnung <input bind:value={label} maxlength="80" required /></label>
   <label>Icon (optional) <input bind:value={icon} maxlength="4" /></label>
-  <label>Art
+  <label
+    >Art
     <select bind:value={kind} disabled={!!preset}>
       <option value="url">URL</option>
       <option value="wifi">WLAN</option>
@@ -2652,7 +2800,8 @@ git commit -m "feat(admin): admin page skeleton with list + reorder + delete"
   {:else if kind === 'wifi'}
     <label>SSID <input bind:value={ssid} required /></label>
     <label>Passwort <input bind:value={password} /></label>
-    <label>Verschlüsselung
+    <label
+      >Verschlüsselung
       <select bind:value={encryption}>
         <option>WPA</option><option>WEP</option><option value="nopass">offen</option>
       </select>
@@ -2687,6 +2836,7 @@ git commit -m "feat(admin): preset form with per-kind fields"
 ## Task 29: Service-Worker Runtime-Caching
 
 **Files:**
+
 - Modify: `vite.config.ts`
 
 - [ ] **Step 1: Aktuelles `vite.config.ts` lesen** und im `SvelteKitPWA(...)`-Call den `workbox.runtimeCaching`-Block ergänzen — andere Optionen unverändert lassen:
@@ -2715,7 +2865,7 @@ runtimeCaching: [
     urlPattern: ({ url }) => url.pathname.startsWith('/api/presets/'),
     handler: 'NetworkOnly'
   }
-]
+];
 ```
 
 - [ ] **Step 2: Build smoke**
@@ -2736,6 +2886,7 @@ git commit -m "feat(pwa): runtime caching for /api/presets (NetworkFirst)"
 ## Task 30: Build-Zeit-Validierung aufräumen
 
 **Files:**
+
 - Delete: `scripts/validate-presets.ts`, `src/data/presets.json`
 - Modify: `package.json`
 
@@ -2766,6 +2917,7 @@ git commit -m "chore: remove build-time presets validation (moved to server)"
 ## Task 31: README + Setup-Doku
 
 **Files:**
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Setup-Abschnitt ergänzen**
@@ -2810,6 +2962,7 @@ git commit -m "docs: backend setup, tests, deployment notes"
 ## Task 32: E2E-Flow mit Pocket-ID-Mock
 
 **Files:**
+
 - Create: `tests/e2e/_oidc-mock.ts`, `tests/e2e/auth-admin-flow.spec.ts`
 - Modify: `playwright.config.ts`
 
@@ -2888,8 +3041,12 @@ import { test, expect } from '@playwright/test';
 import { startOidcMock } from './_oidc-mock';
 
 let mock: Awaited<ReturnType<typeof startOidcMock>>;
-test.beforeAll(async () => { mock = await startOidcMock(); });
-test.afterAll(async () => { await mock.stop(); });
+test.beforeAll(async () => {
+  mock = await startOidcMock();
+});
+test.afterAll(async () => {
+  await mock.stop();
+});
 
 test('anonymous can generate QR; admin can manage presets', async ({ page }) => {
   await page.goto('/');
@@ -2996,7 +3153,7 @@ git commit -m "chore: final lint/format pass" || echo "nothing to commit"
 2. **`prerender = 'auto'`** lässt SvelteKit pro Route entscheiden; dynamische Endpoints opten via `export const prerender = false;` aus. Statische Routen (`/wifi`, `/tel`, `/contact`, `/qr`) bleiben unverändert prerendered.
 3. **Groups-Claim**: Pocket ID liefert `groups` typischerweise im ID-Token; falls in deinem Setup nur die UserInfo das hat, deckt `/auth/callback` beides ab (Merge in dieser Reihenfolge).
 4. **SameSite=Lax** für Session-Cookies: OIDC-Callback ist ein cross-site GET; Strict würde den Cookie beim Callback dropen. Origin-Check im Logout-Endpoint deckt CSRF auf Mutations ab.
-5. **Tests in `tests/server/api/**`** laufen ausschließlich via `vitest.workers.config.ts`; der reguläre `vitest.config.ts` schließt sie aus, damit `pnpm test` schnell bleibt.
+5. **Tests in `tests/server/api/**`** laufen ausschließlich via `vitest.workers.config.ts`; der reguläre `vitest.config.ts`schließt sie aus, damit`pnpm test` schnell bleibt.
 6. **Fake-D1 mit better-sqlite3** ist eine Unit-Test-Bequemlichkeit für Repos/Helpers (kein D1-Replacement). Integrationstests laufen gegen Miniflare-D1 (Task 19+).
 7. **CSP/Headers** sind nicht im Plan; Cloudflare Pages erlaubt eine `_headers`-Datei für späteren Ausbau.
 8. Falls `@cloudflare/vitest-pool-workers` Importe (`cloudflare:test`, `applyD1Migrations`) anders aussehen als hier skizziert, an aktuelle Pool-Worker-Doku adaptieren; die Test-Logik bleibt äquivalent.

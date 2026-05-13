@@ -13,9 +13,7 @@ beforeAll(async () => {
   await applyD1Migrations(testEnv.DB, testEnv.TEST_MIGRATIONS);
 });
 
-type TestUser =
-  | { id: string; email?: string; displayName?: string; role: 'user' | 'admin' }
-  | null;
+type TestUser = { id: string; email?: string; displayName?: string; role: 'user' | 'admin' } | null;
 
 async function seedPreset(id: string, label: string, sortOrder: number) {
   const now = Date.now();

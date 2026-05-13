@@ -26,14 +26,14 @@ Die Presets enthalten sensible Daten (z. B. WLAN-Passwörter für Einsatz-Hotspo
 
 ## 2. Technologie-Stack-Ergänzungen
 
-| Bereich | Wahl | Begründung |
-|---|---|---|
-| Hosting | **Cloudflare Pages** (unverändert) + **Workers** via `@sveltejs/adapter-cloudflare` | Hybrid-Adapter: statische Routes prerendered, dynamische API-Routes auf Workers; kein zusätzlicher Service |
-| Datenbank | **Cloudflare D1** (SQLite) | Kostenlos bis 5 GB, eingebaute Migrationen via `wrangler d1 migrations`, gut für strukturierte Presets |
-| Auth-Provider | **Pocket ID** (self-hosted OIDC) | Bestehender DRK-Login |
-| OIDC-Client | **`arctic`** + **`oslo`** | Schlank, typisiert, gut für SvelteKit |
-| Session-Storage | **Cookie-Sessions** (signed) in D1-Tabelle `sessions` | Einfacher als JWT, sofort widerrufbar |
-| Local Dev | **Wrangler** für Workers/D1-Emulation | `pnpm dev` startet Vite + Wrangler-Dev |
+| Bereich         | Wahl                                                                                | Begründung                                                                                                 |
+| --------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Hosting         | **Cloudflare Pages** (unverändert) + **Workers** via `@sveltejs/adapter-cloudflare` | Hybrid-Adapter: statische Routes prerendered, dynamische API-Routes auf Workers; kein zusätzlicher Service |
+| Datenbank       | **Cloudflare D1** (SQLite)                                                          | Kostenlos bis 5 GB, eingebaute Migrationen via `wrangler d1 migrations`, gut für strukturierte Presets     |
+| Auth-Provider   | **Pocket ID** (self-hosted OIDC)                                                    | Bestehender DRK-Login                                                                                      |
+| OIDC-Client     | **`arctic`** + **`oslo`**                                                           | Schlank, typisiert, gut für SvelteKit                                                                      |
+| Session-Storage | **Cookie-Sessions** (signed) in D1-Tabelle `sessions`                               | Einfacher als JWT, sofort widerrufbar                                                                      |
+| Local Dev       | **Wrangler** für Workers/D1-Emulation                                               | `pnpm dev` startet Vite + Wrangler-Dev                                                                     |
 
 **Adapter-Wechsel:** `adapter-static` → `adapter-cloudflare`. Alle bisherigen Routen bleiben prerendered via `export const prerender = true`. Dynamische Routen (`/api/...`, `/admin/...`) bekommen `prerender = false`.
 
@@ -94,13 +94,13 @@ Wer hat wann welches Preset geändert? Klein anfangen, ggf. erweitern.
 
 ## 4. Rollen & Berechtigungen
 
-| Aktion | anonym | user | admin |
-|---|---|---|---|
-| QR generieren (URL/WLAN/Tel/Kontakt) | ✅ | ✅ | ✅ |
-| Verlauf (LocalStorage) | ✅ | ✅ | ✅ |
-| Presets sehen | ❌ | ✅ | ✅ |
-| Preset anlegen / bearbeiten / löschen | ❌ | ❌ | ✅ |
-| Sortier-Reihenfolge ändern | ❌ | ❌ | ✅ |
+| Aktion                                | anonym | user | admin |
+| ------------------------------------- | ------ | ---- | ----- |
+| QR generieren (URL/WLAN/Tel/Kontakt)  | ✅     | ✅   | ✅    |
+| Verlauf (LocalStorage)                | ✅     | ✅   | ✅    |
+| Presets sehen                         | ❌     | ✅   | ✅    |
+| Preset anlegen / bearbeiten / löschen | ❌     | ❌   | ✅    |
+| Sortier-Reihenfolge ändern            | ❌     | ❌   | ✅    |
 
 **Rollen-Mapping aus Pocket ID:**
 
@@ -251,15 +251,15 @@ import adapter from '@sveltejs/adapter-cloudflare';
 
 ### Threat Model
 
-| Bedrohung | Mitigation |
-|---|---|
-| Token-Diebstahl via XSS | HttpOnly-Cookies, kein localStorage für Tokens |
-| CSRF auf Mutations | SameSite=Strict-Cookies + Origin-Check im Handler |
-| Brute-Force Login | Pocket ID handelt das (Rate-Limit, MFA) |
-| Session-Hijack | Sessions binden an Cookie-Wert; bei Logout server-seitig gelöscht |
-| Preset-Tampering | Admin-Rolle Server-side geprüft, nicht client-side |
-| SQL-Injection | D1 `bind()` für alle User-Inputs, kein String-Concat |
-| Open-Redirect via `return` | Allowlist auf eigene Origin im `/auth/callback` |
+| Bedrohung                  | Mitigation                                                        |
+| -------------------------- | ----------------------------------------------------------------- |
+| Token-Diebstahl via XSS    | HttpOnly-Cookies, kein localStorage für Tokens                    |
+| CSRF auf Mutations         | SameSite=Strict-Cookies + Origin-Check im Handler                 |
+| Brute-Force Login          | Pocket ID handelt das (Rate-Limit, MFA)                           |
+| Session-Hijack             | Sessions binden an Cookie-Wert; bei Logout server-seitig gelöscht |
+| Preset-Tampering           | Admin-Rolle Server-side geprüft, nicht client-side                |
+| SQL-Injection              | D1 `bind()` für alle User-Inputs, kein String-Concat              |
+| Open-Redirect via `return` | Allowlist auf eigene Origin im `/auth/callback`                   |
 
 ### Secrets-Handling
 
@@ -370,7 +370,7 @@ Pocket-ID-Application konfigurieren:
 
 - **Unit:** Auth-Helper (Cookie-Parsing, Session-Validation, Role-Mapping aus Token-Claims)
 - **Integration:** Per `@cloudflare/vitest-pool-workers` API-Endpoints gegen lokale D1
-- **E2E:** 
+- **E2E:**
   - Mock Pocket ID via `@playwright/test` Network-Intercept oder lokaler OIDC-Mock
   - Flow: anonym → Login → User-Rolle → Presets sichtbar
   - Flow: Admin → Preset anlegen → erscheint in Liste
@@ -385,15 +385,15 @@ Pocket-ID-Application konfigurieren:
 
 ## 13. Fehlerfälle & Edge Cases (Ergänzungen)
 
-| Szenario | Verhalten |
-|---|---|
-| `/api/presets` Network-Error (offline, nie cached) | Empty-State im Grid, kein Fehler-Toast |
-| Pocket-ID nicht erreichbar beim Login | Fehlerseite mit Retry-Link + Hinweis: anonyme Nutzung weiter möglich |
-| Session-Cookie abgelaufen, User klickt Admin-Aktion | 401 → Frontend redirected zu `/auth/login` mit `return=current-path` |
-| Admin löscht Preset, anderer Admin-Tab hat Stand davor | Optimistisch löschen, bei 404 von Server: Liste neu laden |
-| User-Rolle wird im Pocket ID gegen `none` geändert | Beim nächsten Token-Refresh erkennt Server → Session invalidiert |
-| Preset-Slug-Kollision | Server hängt `-2`, `-3` ... an |
-| D1 nicht erreichbar | 503 zurück, Frontend zeigt „Wartung — bitte später erneut versuchen" |
+| Szenario                                               | Verhalten                                                            |
+| ------------------------------------------------------ | -------------------------------------------------------------------- |
+| `/api/presets` Network-Error (offline, nie cached)     | Empty-State im Grid, kein Fehler-Toast                               |
+| Pocket-ID nicht erreichbar beim Login                  | Fehlerseite mit Retry-Link + Hinweis: anonyme Nutzung weiter möglich |
+| Session-Cookie abgelaufen, User klickt Admin-Aktion    | 401 → Frontend redirected zu `/auth/login` mit `return=current-path` |
+| Admin löscht Preset, anderer Admin-Tab hat Stand davor | Optimistisch löschen, bei 404 von Server: Liste neu laden            |
+| User-Rolle wird im Pocket ID gegen `none` geändert     | Beim nächsten Token-Refresh erkennt Server → Session invalidiert     |
+| Preset-Slug-Kollision                                  | Server hängt `-2`, `-3` ... an                                       |
+| D1 nicht erreichbar                                    | 503 zurück, Frontend zeigt „Wartung — bitte später erneut versuchen" |
 
 ---
 

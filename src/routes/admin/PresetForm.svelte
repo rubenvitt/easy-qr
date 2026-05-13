@@ -21,9 +21,9 @@
   );
   let hidden = $state(preset?.kind === 'wifi' ? !!preset.value.hidden : false);
   let name = $state(preset?.kind === 'vcard' ? preset.value.name : '');
-  let tel = $state(preset?.kind === 'vcard' ? preset.value.tel ?? '' : '');
-  let email = $state(preset?.kind === 'vcard' ? preset.value.email ?? '' : '');
-  let org = $state(preset?.kind === 'vcard' ? preset.value.org ?? '' : '');
+  let tel = $state(preset?.kind === 'vcard' ? (preset.value.tel ?? '') : '');
+  let email = $state(preset?.kind === 'vcard' ? (preset.value.email ?? '') : '');
+  let org = $state(preset?.kind === 'vcard' ? (preset.value.org ?? '') : '');
 
   let busy = $state(false);
   let error = $state<string | null>(null);
@@ -70,9 +70,7 @@
 </script>
 
 <form onsubmit={submit} class="preset-form">
-  <label
-    >Bezeichnung <input bind:value={label} maxlength="80" required />
-  </label>
+  <label>Bezeichnung <input bind:value={label} maxlength="80" required /> </label>
   <label>Icon (optional) <input bind:value={icon} maxlength="4" /></label>
   <label
     >Art

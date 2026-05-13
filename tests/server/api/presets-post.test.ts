@@ -13,9 +13,7 @@ beforeAll(async () => {
   await applyD1Migrations(testEnv.DB, testEnv.TEST_MIGRATIONS);
 });
 
-type TestUser =
-  | { id: string; email?: string; displayName?: string; role: 'user' | 'admin' }
-  | null;
+type TestUser = { id: string; email?: string; displayName?: string; role: 'user' | 'admin' } | null;
 
 function callPost(opts: { user: TestUser; body: unknown }): Promise<Response> {
   const platform = { env: { DB: testEnv.DB } } as unknown as App.Platform;
