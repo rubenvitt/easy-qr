@@ -60,6 +60,7 @@
     "wrangler": "^4.90.1"
   },
   "dependencies": {
+    "arctic": "^3.7.0",
     "qrcode": "^1.5.4"
   }
 }
