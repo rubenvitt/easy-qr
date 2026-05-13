@@ -5,7 +5,9 @@ import svelteParser from 'svelte-eslint-parser';
 import globals from 'globals';
 
 export default [
-  { ignores: ['build/**', '.svelte-kit/**', 'node_modules/**', 'pnpm-lock.yaml'] },
+  {
+    ignores: ['build/**', '.svelte-kit/**', '.wrangler/**', 'node_modules/**', 'pnpm-lock.yaml']
+  },
   js.configs.recommended,
   ...ts.configs.recommended,
   ...svelte.configs['flat/recommended'],
