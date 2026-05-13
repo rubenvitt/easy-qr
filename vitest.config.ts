@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [sveltekit(), svelteTesting()],
   test: {
     environment: 'jsdom',
-    include: ['tests/unit/**/*.test.ts', 'tests/server/**/*.test.ts'],
+    include: [
+      'tests/unit/**/*.test.ts',
+      'tests/server/**/*.test.ts',
+      'tests/helpers/**/*.test.ts'
+    ],
     globals: true,
     setupFiles: ['tests/unit/setup.ts'],
     passWithNoTests: true
