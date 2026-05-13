@@ -17,36 +17,94 @@
       (document.getElementById('url-field') as HTMLInputElement | null)?.focus();
     }
   }
+
+  function clear() {
+    onChange('');
+    (document.getElementById('url-field') as HTMLInputElement | null)?.focus();
+  }
 </script>
 
 <label for="url-field">URL</label>
 <div class="row">
-  <input
-    id="url-field"
-    type="url"
-    inputmode="url"
-    autocomplete="off"
-    spellcheck="false"
-    placeholder="https://…"
-    {value}
-    oninput={(e) => onChange((e.currentTarget as HTMLInputElement).value)}
-  />
-  <button type="button" class="secondary" onclick={pasteFromClipboard}>📋 Einfügen</button>
+  <div class="field" class:has-value={value.length > 0}>
+    <input
+      id="url-field"
+      type="url"
+      inputmode="url"
+      autocomplete="off"
+      spellcheck="false"
+      placeholder="https://…"
+      {value}
+      oninput={(e) => onChange((e.currentTarget as HTMLInputElement).value)}
+    />
+    {#if value.length > 0}
+      <button type="button" class="clear" aria-label="Eingabe löschen" onclick={clear}>×</button>
+    {/if}
+  </div>
+  <button type="button" class="secondary paste" onclick={pasteFromClipboard}>
+    <span aria-hidden="true">📋</span>
+    <span>Einfügen</span>
+  </button>
 </div>
-{#if tooLong}
-  <p class="hint">Eingabe zu lang ({value.length} / {QR_MAX_LENGTH})</p>
-{/if}
+<p class="hint" class:warn={tooLong}>
+  {#if tooLong}
+    Eingabe zu lang ({value.length} / {QR_MAX_LENGTH} Zeichen)
+  {:else}
+    z. B. https://lage.beispiel.de — wird direkt zum QR.
+  {/if}
+</p>
 
 <style>
   .row {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--space-2);
+    flex-wrap: wrap;
   }
-  .row input {
-    flex: 1;
+
+  .field {
+    position: relative;
+    flex: 1 1 240px;
+    min-width: 0;
   }
+
+  .field input {
+    padding-right: var(--space-5);
+  }
+
+  .clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+    border: var(--border-med) solid transparent;
+    background: transparent;
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    font-weight: 800;
+  }
+
+  .clear:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+
+  .paste {
+    flex: 0 0 auto;
+  }
+
   .hint {
-    color: var(--muted);
-    font-size: 0.95rem;
+    margin: var(--space-2) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .hint.warn {
+    color: var(--danger);
+    font-weight: 700;
   }
 </style>

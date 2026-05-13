@@ -16,18 +16,33 @@
   });
 </script>
 
-<span class="dot" class:offline={!online} aria-label={online ? 'Online' : 'Offline'}>
-  {online ? '🟢' : '🔴'}
-  {online ? 'Online' : 'Offline'}
-</span>
+{#if !online}
+  <span class="badge" role="status" aria-label="Offline">
+    <span class="dot" aria-hidden="true"></span>
+    OFFLINE
+  </span>
+{/if}
 
 <style>
-  .dot {
-    font-size: 0.9rem;
-    color: var(--muted);
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: var(--border-med) solid var(--ink);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1;
   }
-  .offline {
-    color: var(--fg);
-    font-weight: 600;
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--ink);
+    border-radius: 50%;
   }
 </style>
