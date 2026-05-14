@@ -1,5 +1,5 @@
 import { type RequestHandler } from '@sveltejs/kit';
-import { requireEnv } from '$lib/server/db';
+import { getEnv } from '$lib/server/db';
 import {
   buildOAuth2Client,
   fetchDiscovery,
@@ -18,13 +18,13 @@ import { sanitizeReturnUrl } from '$lib/server/auth/return-url';
 
 export const prerender = false;
 
-export const GET: RequestHandler = async ({ url, platform }) => {
-  const issuer = requireEnv(platform, 'POCKET_ID_ISSUER');
+export const GET: RequestHandler = async ({ url }) => {
+  const issuer = getEnv('POCKET_ID_ISSUER');
   const discovery = await fetchDiscovery(issuer);
   const client = buildOAuth2Client({
-    POCKET_ID_CLIENT_ID: requireEnv(platform, 'POCKET_ID_CLIENT_ID'),
-    POCKET_ID_CLIENT_SECRET: requireEnv(platform, 'POCKET_ID_CLIENT_SECRET'),
-    POCKET_ID_REDIRECT_URI: requireEnv(platform, 'POCKET_ID_REDIRECT_URI')
+    POCKET_ID_CLIENT_ID: getEnv('POCKET_ID_CLIENT_ID'),
+    POCKET_ID_CLIENT_SECRET: getEnv('POCKET_ID_CLIENT_SECRET'),
+    POCKET_ID_REDIRECT_URI: getEnv('POCKET_ID_REDIRECT_URI')
   });
   const state = generateState();
   const codeVerifier = generateCodeVerifier();

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createFakeD1 } from '../../helpers/fake-d1';
+import { createTestDb } from '../../helpers/test-db';
 import { slugify, uniqueSlug } from '../../../src/lib/server/presets/slug';
 
 describe('slugify', () => {
@@ -12,34 +12,30 @@ describe('slugify', () => {
 });
 
 describe('uniqueSlug', () => {
-  let db: D1Database;
-  beforeEach(() => (db = createFakeD1().db));
-
-  it('returns base when free', async () => {
-    expect(await uniqueSlug(db, 'foo')).toBe('foo');
+  let db: ReturnType<typeof createTestDb>;
+  beforeEach(() => {
+    db = createTestDb();
   });
 
-  it('appends -2 on first collision', async () => {
-    await db
-      .prepare(
+  it('returns base when free', () => {
+    expect(uniqueSlug(db, 'foo')).toBe('foo');
+  });
+
+  it('appends -2 on first collision', () => {
+    db.prepare(
+      `INSERT INTO presets (id,label,kind,value,sort_order,created_at,updated_at,created_by,updated_by)
+       VALUES (?,?,?,?,?,?,?,?,?)`
+    ).run('foo', 'Foo', 'text', '""', 0, 0, 0, 'x', 'x');
+    expect(uniqueSlug(db, 'foo')).toBe('foo-2');
+  });
+
+  it('walks until free', () => {
+    for (const id of ['bar', 'bar-2', 'bar-3']) {
+      db.prepare(
         `INSERT INTO presets (id,label,kind,value,sort_order,created_at,updated_at,created_by,updated_by)
          VALUES (?,?,?,?,?,?,?,?,?)`
-      )
-      .bind('foo', 'Foo', 'text', '""', 0, 0, 0, 'x', 'x')
-      .run();
-    expect(await uniqueSlug(db, 'foo')).toBe('foo-2');
-  });
-
-  it('walks until free', async () => {
-    for (const id of ['bar', 'bar-2', 'bar-3']) {
-      await db
-        .prepare(
-          `INSERT INTO presets (id,label,kind,value,sort_order,created_at,updated_at,created_by,updated_by)
-           VALUES (?,?,?,?,?,?,?,?,?)`
-        )
-        .bind(id, id, 'text', '""', 0, 0, 0, 'x', 'x')
-        .run();
+      ).run(id, id, 'text', '""', 0, 0, 0, 'x', 'x');
     }
-    expect(await uniqueSlug(db, 'bar')).toBe('bar-4');
+    expect(uniqueSlug(db, 'bar')).toBe('bar-4');
   });
 });

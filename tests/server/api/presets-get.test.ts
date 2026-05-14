@@ -1,27 +1,26 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { env, applyD1Migrations } from 'cloudflare:test';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { createTestDb } from '../../helpers/test-db';
+import { setDbForTesting, __resetDbForTesting } from '../../../src/lib/server/db';
 import { GET } from '../../../src/routes/api/presets/+server';
 
-type TestEnv = {
-  DB: D1Database;
-  TEST_MIGRATIONS: Parameters<typeof applyD1Migrations>[1];
-};
+let db: ReturnType<typeof createTestDb>;
 
-const testEnv = env as unknown as TestEnv;
-
-beforeAll(async () => {
-  await applyD1Migrations(testEnv.DB, testEnv.TEST_MIGRATIONS);
+beforeEach(() => {
+  db = createTestDb();
+  setDbForTesting(db);
 });
 
-function callGet(opts: { user: { id: string; role: 'user' | 'admin' } | null }): Promise<Response> {
-  const platform = { env: { DB: testEnv.DB } } as unknown as App.Platform;
+afterEach(() => {
+  __resetDbForTesting();
+});
+
+type TestUser = { id: string; email?: string; displayName?: string; role: 'user' | 'admin' } | null;
+
+function callGet(opts: { user: TestUser }): Promise<Response> {
   return Promise.resolve(
-    (
-      GET as unknown as (event: {
-        locals: { user: typeof opts.user };
-        platform: App.Platform;
-      }) => Response | Promise<Response>
-    )({ locals: { user: opts.user }, platform })
+    (GET as unknown as (event: { locals: { user: TestUser } }) => Response | Promise<Response>)({
+      locals: { user: opts.user }
+    })
   );
 }
 
@@ -32,12 +31,10 @@ describe('GET /api/presets', () => {
   });
 
   it('returns presets for an authenticated user', async () => {
-    await testEnv.DB.prepare(
+    db.prepare(
       `INSERT INTO presets (id,label,kind,value,sort_order,created_at,updated_at,created_by,updated_by)
        VALUES (?,?,?,?,?,?,?,?,?)`
-    )
-      .bind('p1-' + crypto.randomUUID(), 'Eins', 'url', '"https://x"', 0, 0, 0, 'system', 'system')
-      .run();
+    ).run('p1-' + crypto.randomUUID(), 'Eins', 'url', '"https://x"', 0, 0, 0, 'system', 'system');
     const res = await callGet({ user: { id: 'u1', role: 'user' } });
     expect(res.status).toBe(200);
     const body = (await res.json()) as { version: number; presets: Array<{ id: string }> };

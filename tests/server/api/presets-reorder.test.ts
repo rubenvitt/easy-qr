@@ -1,32 +1,30 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { env, applyD1Migrations } from 'cloudflare:test';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { createTestDb } from '../../helpers/test-db';
+import { setDbForTesting, __resetDbForTesting } from '../../../src/lib/server/db';
 import { POST } from '../../../src/routes/api/presets/reorder/+server';
 
-type TestEnv = {
-  DB: D1Database;
-  TEST_MIGRATIONS: Parameters<typeof applyD1Migrations>[1];
-};
+let db: ReturnType<typeof createTestDb>;
 
-const testEnv = env as unknown as TestEnv;
+beforeEach(() => {
+  db = createTestDb();
+  setDbForTesting(db);
+});
 
-beforeAll(async () => {
-  await applyD1Migrations(testEnv.DB, testEnv.TEST_MIGRATIONS);
+afterEach(() => {
+  __resetDbForTesting();
 });
 
 type TestUser = { id: string; email?: string; displayName?: string; role: 'user' | 'admin' } | null;
 
-async function seedPreset(id: string, label: string, sortOrder: number) {
+function seedPreset(id: string, label: string, sortOrder: number): void {
   const now = Date.now();
-  await testEnv.DB.prepare(
+  db.prepare(
     `INSERT INTO presets (id, label, icon, kind, value, sort_order, created_at, updated_at, created_by, updated_by)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  )
-    .bind(id, label, null, 'text', JSON.stringify('v'), sortOrder, now, now, 'seed', 'seed')
-    .run();
+  ).run(id, label, null, 'text', JSON.stringify('v'), sortOrder, now, now, 'seed', 'seed');
 }
 
 function callPost(opts: { user: TestUser; body: unknown }): Promise<Response> {
-  const platform = { env: { DB: testEnv.DB } } as unknown as App.Platform;
   const request = new Request('http://localhost/api/presets/reorder', {
     method: 'POST',
     body: JSON.stringify(opts.body),
@@ -37,9 +35,8 @@ function callPost(opts: { user: TestUser; body: unknown }): Promise<Response> {
       POST as unknown as (event: {
         request: Request;
         locals: { user: TestUser };
-        platform: App.Platform;
       }) => Response | Promise<Response>
-    )({ request, locals: { user: opts.user }, platform })
+    )({ request, locals: { user: opts.user } })
   );
 }
 
@@ -49,9 +46,9 @@ describe('POST /api/presets/reorder', () => {
     const idA = `re-a-${uuid}`;
     const idB = `re-b-${uuid}`;
     const idC = `re-c-${uuid}`;
-    await seedPreset(idA, 'A', 1000);
-    await seedPreset(idB, 'B', 1001);
-    await seedPreset(idC, 'C', 1002);
+    seedPreset(idA, 'A', 1000);
+    seedPreset(idB, 'B', 1001);
+    seedPreset(idC, 'C', 1002);
 
     const res = await callPost({
       user: { id: 'admin-r', email: 'a@x', displayName: 'A', role: 'admin' },
@@ -59,12 +56,10 @@ describe('POST /api/presets/reorder', () => {
     });
     expect(res.status).toBe(204);
 
-    const rows = await testEnv.DB.prepare(
-      `SELECT id FROM presets WHERE id IN (?, ?, ?) ORDER BY sort_order, label`
-    )
-      .bind(idA, idB, idC)
-      .all<{ id: string }>();
-    expect(rows.results.map((r) => r.id)).toEqual([idC, idA, idB]);
+    const rows = db
+      .prepare(`SELECT id FROM presets WHERE id IN (?, ?, ?) ORDER BY sort_order, label`)
+      .all(idA, idB, idC) as Array<{ id: string }>;
+    expect(rows.map((r) => r.id)).toEqual([idC, idA, idB]);
   });
 
   it('rejects malformed body', async () => {

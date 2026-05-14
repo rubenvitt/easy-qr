@@ -1,0 +1,55 @@
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Dependencies / build output (rebuilt inside the image)
+node_modules
+.svelte-kit
+build
+dist
+.output
+.vercel
+.netlify
+
+# Local runtime data
+data
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+
+# Env / secrets
+.env
+.env.*
+.dev.vars
+
+# Tests / reports
+tests
+test-results
+playwright-report
+coverage
+
+# CI / editor / OS
+.github
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Docs (keep README.md for `pnpm` postinstall scripts or references)
+docs
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE.md
+
+# Legacy Cloudflare bits
+.wrangler
+wrangler.toml
+
+# Misc
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*

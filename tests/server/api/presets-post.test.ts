@@ -1,22 +1,22 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { env, applyD1Migrations } from 'cloudflare:test';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { createTestDb } from '../../helpers/test-db';
+import { setDbForTesting, __resetDbForTesting } from '../../../src/lib/server/db';
 import { POST } from '../../../src/routes/api/presets/+server';
 
-type TestEnv = {
-  DB: D1Database;
-  TEST_MIGRATIONS: Parameters<typeof applyD1Migrations>[1];
-};
+let db: ReturnType<typeof createTestDb>;
 
-const testEnv = env as unknown as TestEnv;
+beforeEach(() => {
+  db = createTestDb();
+  setDbForTesting(db);
+});
 
-beforeAll(async () => {
-  await applyD1Migrations(testEnv.DB, testEnv.TEST_MIGRATIONS);
+afterEach(() => {
+  __resetDbForTesting();
 });
 
 type TestUser = { id: string; email?: string; displayName?: string; role: 'user' | 'admin' } | null;
 
 function callPost(opts: { user: TestUser; body: unknown }): Promise<Response> {
-  const platform = { env: { DB: testEnv.DB } } as unknown as App.Platform;
   const request = new Request('http://localhost/api/presets', {
     method: 'POST',
     body: JSON.stringify(opts.body),
@@ -27,9 +27,8 @@ function callPost(opts: { user: TestUser; body: unknown }): Promise<Response> {
       POST as unknown as (event: {
         request: Request;
         locals: { user: TestUser };
-        platform: App.Platform;
       }) => Response | Promise<Response>
-    )({ request, locals: { user: opts.user }, platform })
+    )({ request, locals: { user: opts.user } })
   );
 }
 
@@ -60,9 +59,9 @@ describe('POST /api/presets', () => {
     expect(created.id).toBe('beispiel-link');
     expect(created.label).toBe('Beispiel Link');
 
-    const row = await testEnv.DB.prepare(`SELECT id FROM presets WHERE id = ?`)
-      .bind('beispiel-link')
-      .first<{ id: string }>();
+    const row = db.prepare(`SELECT id FROM presets WHERE id = ?`).get('beispiel-link') as
+      | { id: string }
+      | undefined;
     expect(row?.id).toBe('beispiel-link');
   });
 

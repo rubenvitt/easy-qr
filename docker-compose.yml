@@ -1,0 +1,26 @@
+services:
+  app:
+    image: ghcr.io/rubenvitt/easy-qr:latest
+    # build: .            # uncomment for local builds instead of pulling from GHCR
+    restart: unless-stopped
+    environment:
+      POCKET_ID_ISSUER: ${POCKET_ID_ISSUER}
+      POCKET_ID_CLIENT_ID: ${POCKET_ID_CLIENT_ID}
+      POCKET_ID_CLIENT_SECRET: ${POCKET_ID_CLIENT_SECRET}
+      POCKET_ID_REDIRECT_URI: ${POCKET_ID_REDIRECT_URI}
+      SESSION_SECRET: ${SESSION_SECRET}
+      APP_ORIGIN: ${APP_ORIGIN}
+      DB_PATH: /data/app.db
+      HOST: 0.0.0.0
+      PORT: 3000
+    volumes:
+      - ./data:/data
+    ports:
+      - "3000:3000"
+    # Reverse-Proxy example (Traefik):
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.qr.rule=Host(`qr.example.org`)
+    #   - traefik.http.routers.qr.entrypoints=websecure
+    #   - traefik.http.routers.qr.tls.certresolver=letsencrypt
+    #   - traefik.http.services.qr.loadbalancer.server.port=3000

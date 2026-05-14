@@ -1,3 +1,5 @@
+import type { Db } from '$lib/server/db';
+
 const UMLAUT_MAP: Record<string, string> = { ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss' };
 
 export function slugify(input: string): string {
@@ -12,14 +14,13 @@ export function slugify(input: string): string {
   return slug || 'preset';
 }
 
-export async function uniqueSlug(db: D1Database, base: string): Promise<string> {
+export function uniqueSlug(db: Db, base: string): string {
   let candidate = base;
   let suffix = 2;
   while (true) {
-    const row = await db
+    const row = db
       .prepare(`SELECT 1 AS one FROM presets WHERE id = ?`)
-      .bind(candidate)
-      .first<{ one: number }>();
+      .get(candidate) as { one: number } | undefined;
     if (!row) return candidate;
     candidate = `${base}-${suffix++}`;
     if (suffix > 1000) throw new Error('uniqueSlug: exhausted suffix space');

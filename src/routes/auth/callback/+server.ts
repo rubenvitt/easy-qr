@@ -1,5 +1,5 @@
 import { type RequestHandler } from '@sveltejs/kit';
-import { requireDb, requireEnv } from '$lib/server/db';
+import { getDb, getEnv } from '$lib/server/db';
 import {
   buildOAuth2Client,
   fetchDiscovery,
@@ -21,7 +21,7 @@ import { sanitizeReturnUrl } from '$lib/server/auth/return-url';
 
 export const prerender = false;
 
-export const GET: RequestHandler = async ({ url, request, platform }) => {
+export const GET: RequestHandler = async ({ url, request }) => {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   if (url.searchParams.get('error'))
@@ -36,12 +36,12 @@ export const GET: RequestHandler = async ({ url, request, platform }) => {
     return errorPage('State stimmt nicht überein', 400);
   }
 
-  const issuer = requireEnv(platform, 'POCKET_ID_ISSUER');
+  const issuer = getEnv('POCKET_ID_ISSUER');
   const discovery = await fetchDiscovery(issuer);
   const client = buildOAuth2Client({
-    POCKET_ID_CLIENT_ID: requireEnv(platform, 'POCKET_ID_CLIENT_ID'),
-    POCKET_ID_CLIENT_SECRET: requireEnv(platform, 'POCKET_ID_CLIENT_SECRET'),
-    POCKET_ID_REDIRECT_URI: requireEnv(platform, 'POCKET_ID_REDIRECT_URI')
+    POCKET_ID_CLIENT_ID: getEnv('POCKET_ID_CLIENT_ID'),
+    POCKET_ID_CLIENT_SECRET: getEnv('POCKET_ID_CLIENT_SECRET'),
+    POCKET_ID_REDIRECT_URI: getEnv('POCKET_ID_REDIRECT_URI')
   });
 
   let tokens;
@@ -76,13 +76,13 @@ export const GET: RequestHandler = async ({ url, request, platform }) => {
     throw e;
   }
 
-  const db = requireDb(platform);
-  await upsertUser(db, { sub, email, name, role });
-  const sessionId = await createSession(db, sub);
+  const db = getDb();
+  upsertUser(db, { sub, email, name, role });
+  const sessionId = createSession(db, sub);
 
   const cookie = await serializeSessionCookie(
     sessionId,
-    requireEnv(platform, 'SESSION_SECRET'),
+    getEnv('SESSION_SECRET'),
     SESSION_TTL_SECONDS
   );
 

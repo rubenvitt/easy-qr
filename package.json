@@ -12,6 +12,7 @@
     "icons": "tsx scripts/generate-icons.ts",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "node build/index.js",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -20,16 +21,12 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:integration": "vitest run --config vitest.workers.config.ts",
-    "test:all": "pnpm test && pnpm test:integration",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.16.4",
-    "@cloudflare/workers-types": "^4.20260511.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
-    "@sveltejs/adapter-cloudflare": "^7.2.8",
+    "@sveltejs/adapter-node": "^5.3.4",
     "@sveltejs/kit": "^2.57.0",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@testing-library/jest-dom": "^6.9.1",
@@ -39,7 +36,6 @@
     "@types/node": "^25.6.2",
     "@types/qrcode": "^1.5.6",
     "@vite-pwa/sveltekit": "^1.1.0",
-    "better-sqlite3": "^12.10.0",
     "eslint": "^10.3.0",
     "eslint-plugin-svelte": "^3.17.1",
     "globals": "^17.6.0",
@@ -57,11 +53,11 @@
     "vite": "^8.0.7",
     "vite-plugin-pwa": "^1.3.0",
     "vitest": "^4.1.6",
-    "workbox-window": "^7.4.1",
-    "wrangler": "^4.90.1"
+    "workbox-window": "^7.4.1"
   },
   "dependencies": {
     "arctic": "^3.7.0",
+    "better-sqlite3": "^12.10.0",
     "qrcode": "^1.5.4"
   }
 }
