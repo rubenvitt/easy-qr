@@ -14,7 +14,11 @@ import {
   serializeClearedTransientCookie,
   serializeSessionCookie
 } from '$lib/server/auth/cookies';
-import { mapRoleFromGroups, NoRoleError } from '$lib/server/auth/role-mapping';
+import {
+  mapRoleFromGroups,
+  roleMappingConfigFromEnv,
+  NoRoleError
+} from '$lib/server/auth/role-mapping';
 import { upsertUser } from '$lib/server/auth/users';
 import { createSession, SESSION_TTL_SECONDS } from '$lib/server/auth/sessions';
 import { sanitizeReturnUrl } from '$lib/server/auth/return-url';
@@ -70,7 +74,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
   let role;
   try {
-    role = mapRoleFromGroups(groups);
+    role = mapRoleFromGroups(groups, roleMappingConfigFromEnv());
   } catch (e) {
     if (e instanceof NoRoleError) return errorPage('Kein Zugriff — bitte Admin kontaktieren', 403);
     throw e;

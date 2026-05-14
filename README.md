@@ -60,7 +60,7 @@ Hinweise:
 
 - Redirect-URI: `https://<host>/auth/callback`
 - Scopes: `openid profile email groups`
-- Gruppen: `drk-qr-admin`, `drk-qr-user`
+- Gruppen: per Default `drk-qr-admin` (Admin-Rolle) und `drk-qr-user` (User-Rolle). Über die Environment-Variablen `OIDC_ADMIN_GROUPS` und `OIDC_USER_GROUPS` (Komma-getrennt) können beliebige andere Gruppennamen gemappt werden. Wer in beiden Listen ist, bekommt `admin`.
 
 ## Architektur
 
