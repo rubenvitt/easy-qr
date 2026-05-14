@@ -1,9 +1,19 @@
+import { sentrySvelteKit } from '@sentry/sveltekit';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [
+    sentrySvelteKit({
+      autoUploadSourceMaps: Boolean(process.env.SENTRY_AUTH_TOKEN),
+      sourceMapsUploadOptions: {
+        org: 'rubeen',
+        project: 'qr-generator',
+        url: process.env.SENTRY_URL ?? 'https://sentry.rubeen.dev/',
+        authToken: process.env.SENTRY_AUTH_TOKEN
+      }
+    }),
     sveltekit(),
     SvelteKitPWA({
       strategies: 'generateSW',
