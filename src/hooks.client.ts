@@ -1,11 +1,12 @@
 import { handleErrorWithSentry } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
-import { env } from '$env/dynamic/public';
 import { dev } from '$app/environment';
 
-if (env.PUBLIC_SENTRY_DSN) {
+declare const __PUBLIC_SENTRY_DSN__: string;
+
+if (__PUBLIC_SENTRY_DSN__) {
   Sentry.init({
-    dsn: env.PUBLIC_SENTRY_DSN,
+    dsn: __PUBLIC_SENTRY_DSN__,
     environment: dev ? 'development' : 'production',
     tracesSampleRate: 0.1,
     replaysSessionSampleRate: 0,

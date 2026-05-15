@@ -4,6 +4,9 @@ import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  define: {
+    __PUBLIC_SENTRY_DSN__: JSON.stringify(process.env.PUBLIC_SENTRY_DSN ?? '')
+  },
   plugins: [
     sentrySvelteKit({
       autoUploadSourceMaps: Boolean(process.env.SENTRY_AUTH_TOKEN),
